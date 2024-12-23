@@ -3,7 +3,7 @@
 \docType{data}
 \name{pt01Epochm3sp5s}
 \alias{pt01Epochm3sp5s}
-\title{Pt01 seizure 1}
+\title{Pt01 seizure 1 (-3:5s) around seizure onset}
 \format{
 A Matrix with 8001 rows (time points) and 84 columns (electrodes)
 
