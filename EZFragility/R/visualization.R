@@ -1,4 +1,4 @@
-#' Visualization
+#' Visualization functions (raw signal, fragility matrix)
 #' 
 #' plot fragility heatmaps with electrodes marked as soz colored
 #'
@@ -11,7 +11,7 @@
 #' @param subject_code patient name
 #' @param j seizure number
 #'
-#' @return a heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
+#' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #' @export
 #'
 #' @examples
@@ -50,12 +50,12 @@ heatmap_frag<-function(frag,goodelec,sozelec,ieegts,time_window,option=NULL,subj
   ggplot2::ggplot(fragmap_data, ggplot2::aes(x = Time, y = Electrode, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
-    ggplot2::labs(x = "Time (s)", y = "Electrode") +
+    ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +  #
     
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      axis.text.y = ggplot2::element_text(size=5,colour=colorelec),     # Adjust depending on electrodes
+      axis.text.y = ggplot2::element_text(size=3,colour=colorelec),     # Adjust depending on electrodes
     )
   
 }

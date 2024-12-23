@@ -2,7 +2,8 @@
 % Please edit documentation in R/calc_PLHG.R
 \name{calc_PLHG}
 \alias{calc_PLHG}
-\title{Computes the Phase Locked High Gamma matrix for ictal iEEG}
+\title{Computes the Phase Locked High Gamma matrix for ictal iEEG
+Implementation of PLHG as described in:}
 \usage{
 calc_PLHG(ieegts, sizeWindow, sizeSkip, fs, tBaseline)
 }
@@ -18,6 +19,18 @@ with time points as rows and electrodes names as columns}
 
 \item{tBaseline}{baseline start from seizure onset}
 }
+\value{
+plhgMaster matrix of PLHG values
+}
 \description{
 Computes the Phase Locked High Gamma matrix for ictal iEEG
+Implementation of PLHG as described in:
+}
+\examples{
+data("PT01Epochm30sp30s")
+sizeWindow <- 250
+sizeSkip <- 125
+fs=1000
+tBaseline=-30
+resPLHG<-calc_PHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline)
 }

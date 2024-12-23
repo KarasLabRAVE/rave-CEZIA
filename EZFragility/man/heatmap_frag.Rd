@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{heatmap_frag}
 \alias{heatmap_frag}
-\title{Visualization}
+\title{Visualization functions (raw signal, fragility matrix)}
 \usage{
 heatmap_frag(
   frag,
@@ -32,7 +32,7 @@ with time points as rows and electrodes names as columns}
 \item{j}{seizure number}
 }
 \value{
-a heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
+Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 }
 \description{
 plot fragility heatmaps with electrodes marked as soz colored

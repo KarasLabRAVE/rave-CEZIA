@@ -40,4 +40,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     ggplot2,
-    viridis
+    viridis,
+    gsignal,
+    oce,
+    reticulate
+Depends: 
+    R (>= 2.10)
+LazyData: true
