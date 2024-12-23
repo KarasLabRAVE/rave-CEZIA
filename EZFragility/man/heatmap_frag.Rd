@@ -38,8 +38,6 @@ a heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
-library(ggplot2)
-library(viridis)
 data("fragm3sp5s")
 data("fragrankm3sp5s")
 data("goodelec")
