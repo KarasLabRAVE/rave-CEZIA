@@ -20,8 +20,10 @@
 #' sizeSkip <- 333
 #' fs=1000
 #' tBaseline=20
+#' time_window_ictal=c(-10,10)
+#' time_window=c(-30:30)
 #' resPLHG<-calc_PHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline)
-calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline) {
+calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,time_window) {
 
   np<-reticulate::import('numpy')
 

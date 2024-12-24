@@ -5,7 +5,15 @@
 \title{Computes the Phase Locked High Gamma matrix for ictal iEEG
 Implementation of PLHG as described in:}
 \usage{
-calc_PLHG(ieegts, sizeWindow, sizeSkip, fs, tBaseline)
+calc_PLHG(
+  ieegts,
+  sizeWindow,
+  sizeSkip,
+  fs,
+  tBaseline,
+  time_window_ictal,
+  time_window
+)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -28,9 +36,11 @@ Implementation of PLHG as described in:
 }
 \examples{
 data("PT01Epochm30sp30s")
-sizeWindow <- 250
-sizeSkip <- 125
+sizeWindow <- 3000
+sizeSkip <- 333
 fs=1000
-tBaseline=-30
+tBaseline=20
+time_window_ictal=c(-10,10)
+time_window=c(-30:30)
 resPLHG<-calc_PHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline)
 }
