@@ -27,26 +27,26 @@ The method is based on the paper by Weiss et al. 2013. <a href="https://pubmed.n
 
 This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -30:30s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 20001 rows (time points) and 84 columns (electrodes).
 
-```{r}
+```{r ictal_data}
 data("PT01Epochm30sp30s")
 ```
 
 Electrode data
-```{r}
+```{r electrode_data}
 data("ElectrodesDataPT01")
 head(ElectrodesDataPT01,n=10)
 
 ```
 
 ## Plot Raw signal for patient PT01 for electrodes marked as soz
-```{r,out.width="80%"}
+```{r plot_raw,out.width="80%"}
 displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
 scaling=1000000
 visuiEEGdata(ieegts=PT01Epochm30sp30s,scaling=scaling, displayChannels = displayChannels)
 ```
 
 ## Compute the Phase Locked High Gamma matrix 
-```{r}
+```{r run_plhg}
 data("PT01Epochm30sp30s")
 sizeWindow <- 3000
 sizeSkip <- 333
@@ -58,7 +58,7 @@ plhgMaster<-calc_PLHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSki
 ```
 
 ## Plot heatmap of the phase locked high gamma values 
-```{r}
+```{r plot heatmap}
 data("PT01Epochm30sp30s")
 data("ElectrodesDataPT01")
 data("resPLHG")

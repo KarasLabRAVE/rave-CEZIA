@@ -49,7 +49,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(fraghm3sp5s)
+#' @usage data(fragm3sp5s)
 #'
 #' @format fragility matrix result of example 2 for calc_adj_frag function help
 #'  with and 84 columns (electrodes)
@@ -61,6 +61,6 @@
 #' (\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 #'
 #' @examples
-#' data(pt01Epochm3sp5s)
-"pt01Epochm3sp5s"
+#' data(fragm3sp5s)
+"fragm3sp5s"
 

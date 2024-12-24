@@ -36,6 +36,29 @@ visuiEEGdata<-function( ieegts, scaling, displayChannels){
 
 }
 
+
+#' Heatmap visualization
+#'
+#' @param resPLHG Matrix result of PLHG
+#' @param ElectrodesData Electrodes data
+#' @param ieegts Numeric. A matrix of iEEG time series x(t),
+#' with time points as rows and electrodes names as columns
+#' @param time_window_ictal Fragility heatmap time window around seizure onset
+#' @param subject_code patient name
+#' @param j seizure number
+#'
+#' @return Heatmap plot of the PLHG matrix with soz electrodes in blue in the bottom
+#' @export
+#'
+#' @examples
+#' data("PT01Epochm30sp30s")
+#'data("ElectrodesDataPT01")
+#'data("resPLHG")
+#'ElectrodesData=ElectrodesDataPT01
+#'time_window_ictal=c(-10,10)
+#'subject_code='PT01'
+#'j=1
+#'heatmap_PLHG(resPLHG=resPLHG, ElectrodesData=ElectrodesDataPT01,ieegts=PT01Epochm30sp30s,time_window_ictal,subject_code,j)
 heatmap_PLHG<-function(resPLHG, ElectrodesData,ieegts,time_window_ictal,subject_code,j){
 
 

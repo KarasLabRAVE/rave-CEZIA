@@ -42,5 +42,5 @@ fs=1000
 tBaseline=20
 time_window_ictal=c(-10,10)
 time_window=c(-30,30)
-resPLHG<-calc_PHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline,time_window=time_window,time_window_ictal=time_window_ictal)
+resPLHG<-calc_PLHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline,time_window=time_window,time_window_ictal=time_window_ictal)
 }

@@ -6,8 +6,7 @@
 \usage{
 heatmap_frag(
   frag,
-  goodelec,
-  sozelec,
+  ElectrodesData,
   ieegts,
   time_window,
   option = NULL,
@@ -18,9 +17,7 @@ heatmap_frag(
 \arguments{
 \item{frag}{fragility matrix results}
 
-\item{goodelec}{}
-
-\item{sozelec}{}
+\item{ElectrodesData}{electrodes data}
 
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
@@ -40,9 +37,8 @@ plot fragility heatmaps with electrodes marked as soz colored
 \examples{
 data("fragm3sp5s")
 data("fragrankm3sp5s")
-data("goodelec")
 data("pt01Epochm3sp5s")
-data("sozelec")
+data("ElectrodesDataPT01")
 time_window=c(-3:5)
-heatmap_frag(frag=fragm3sp5s,goodelec=goodelec,sozelec=sozelec,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
+heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
 }

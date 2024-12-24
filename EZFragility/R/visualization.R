@@ -3,8 +3,7 @@
 #' plot fragility heatmaps with electrodes marked as soz colored
 #'
 #' @param frag fragility matrix results
-#' @param goodelec 
-#' @param sozelec 
+#' @param ElectrodesData electrodes data
 #' @param ieegts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
 #' @param time_window Fragility heatmap time window around seizure onset
@@ -17,17 +16,15 @@
 #' @examples
 #' data("fragm3sp5s")
 #' data("fragrankm3sp5s")
-#' data("goodelec")
 #' data("pt01Epochm3sp5s")
-#' data("sozelec")
+#' data("ElectrodesDataPT01")
 #' time_window=c(-3:5)
-#' heatmap_frag(frag=fragm3sp5s,goodelec=goodelec,sozelec=sozelec,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
-heatmap_frag<-function(frag,goodelec,sozelec,ieegts,time_window,option=NULL,subject_code,j){
+#' heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
+heatmap_frag<-function(frag,ElectrodesData,ieegts,time_window,option=NULL,subject_code,j){
   
   titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
-  insoz=goodelec%in%sozelec
-  elecsoz=which(insoz==TRUE)
-  elecsozc=which(insoz==FALSE)
+  elecsoz=which(ElectrodesData$insoz==TRUE)
+  elecsozc=which(ElectrodesData$insoz==FALSE)
   elecsozsozc=c(elecsoz,elecsozc)
   
   elecnum <- colnames(ieegts)[elecsozsozc]
@@ -55,7 +52,45 @@ heatmap_frag<-function(frag,goodelec,sozelec,ieegts,time_window,option=NULL,subj
     
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      axis.text.y = ggplot2::element_text(size=3,colour=colorelec),     # Adjust depending on electrodes
+      axis.text.y = ggplot2::element_text(size=4,colour=colorelec),     # Adjust depending on electrodes
     )
+  
+}
+
+#' Visualization iEEGData
+#'
+#' @param ieegts Numeric. A matrix of iEEG time series x(t),
+#' with time points as rows and electrodes names as columns
+#' @param scaling Scaling factor
+#' @param displayChannels Channels to display
+#'
+#' @return plot raw signal
+#' @export
+#'
+#' @examples
+#' data("PT01Epochm30sp30s")
+#' data("ElectrodesDataPT01")
+#' displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
+#' visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
+visuiEEGdata<-function( ieegts, scaling, displayChannels){
+  
+  
+  plotData<-ieegts[,displayChannels]/scaling
+  gaps<-2
+  displayNames=colnames(ieegts)[displayChannels]
+  
+  for(i in seq_along(plotData)){
+    plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
+      (ncol(plotData)-i)*gaps
+  }
+  
+  plot(plotData[, 1],type="l" ,cex=0.1,
+       ylim = range(plotData), yaxt = "n")
+  for(i in 2:ncol(plotData)){
+    lines(plotData[, i])
+  }
+  axis(2, at = rev(seq_along(displayChannels) - 1)*gaps,
+       labels = displayNames,las=1)
+  
   
 }
