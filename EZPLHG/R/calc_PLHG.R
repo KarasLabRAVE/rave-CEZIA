@@ -22,7 +22,7 @@
 #' tBaseline=20
 #' time_window_ictal=c(-10,10)
 #' time_window=c(-30,30)
-#' resPLHG<-calc_PHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline,time_window=time_window,time_window_ictal=time_window_ictal)
+#' resPLHG<-calc_PLHG(ieegts = PT01Epochm30sp30s, sizeWindow=sizeWindow, sizeSkip=sizeSkip,fs=fs,tBaseline=tBaseline,time_window=time_window,time_window_ictal=time_window_ictal)
 calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,time_window) {
 
   np<-reticulate::import('numpy')
@@ -31,6 +31,10 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
   n_tps <- nrow(ieegts)
   n_elec <- ncol(ieegts)
 
+  nyquist <- fs/2
+  transitionWidth <- 0.1
+
+
   electrode_list <- colnames(ieegts)
 
   # number of windows for PLHG analysis
@@ -38,9 +42,9 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
   #
   ntb=tBaseline*fs
-  tsBaseline=matrix(0,ntb,n_elec)
+  #tsBaseline=matrix(0,ntb,n_elec)
 
-  tsBaseline[1:ntb,1:n_elec]=ieegts[1:ntb,1:n_elec]
+  tsBaseline=data.matrix(ieegts[1:ntb,1:n_elec], rownames.force=NA)
 
   #Epoch Ictal signal
   its=as.integer((time_window_ictal[1]-time_window[1])*fs)
@@ -51,11 +55,111 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
   ts <- 1:nt
   ts <- ts*dt+time_window_ictal[1]
-  tsIctal<-ieegts[its:ite,1:n_elec]
+  tsIctal<-data.matrix(ieegts[its:ite,1:n_elec], rownames.force=NA)
 
   # number of windows for PLHG analysis
   nw<-floor((nt-sizeWindow)/sizeSkip)
 
+
+  stepsBuffer=matrix(0,sizeWindow,nw)
+
+  for(ii in 1:nw){
+    stepsBuffer[1:sizeWindow,ii]<-(ii-1)*sizeSkip+1:sizeWindow
+  }
+  for(ii in 1:sizeWindow){
+    if(stepsBuffer[ii,nw]>nt) stepsBuffer[ii,nw]<-0
+  }
+
+  #check<-stepsBuffer[,nw]
+  timeVals<-stepsBuffer[1,]
+
+  PLVMaster<-matrix(0,nw,n_elec)
+
+  ##########################################
+  # Filter signal low frequency
+
+  filterwindow<-c(4,30)
+  fvec   <- vector(mode="numeric", length=6)
+  fvec[1] <- 0.0
+  fvec[2] <- (1 - transitionWidth) * filterwindow[1]/nyquist
+  fvec[3] <- filterwindow[1]/nyquist
+  fvec[4] <- filterwindow[2]/nyquist
+  fvec[5] <- (1 + transitionWidth) * filterwindow[2]/nyquist
+  fvec[6] <- 1.0
+  idealresponse<-c(0, 0, 1, 1, 0, 0)
+
+ # sprintf(" Filter Data in low Frequency Band 4-30 Hz")
+  # build firls filter
+  fir_4_30<-gsignal::firls(499,fvec,idealresponse)
+  filter_4_30 <- gsignal::filtfilt(fir_4_30,tsIctal)
+  hilbert_4_30<-gsignal::hilbert(filter_4_30)
+  phi_4_30<-np$angle(hilbert_4_30)
+
+  ##########################################
+  # Filter signal high gamma
+
+  filterwindow<-c(80,150)
+  fvec   <- vector(mode="numeric", length=6)
+  fvec[1] <- 0.0
+  fvec[2] <- (1 - transitionWidth) * filterwindow[1]/nyquist
+  fvec[3] <- filterwindow[1]/nyquist
+  fvec[4] <- filterwindow[2]/nyquist
+  fvec[5] <- (1 + transitionWidth) * filterwindow[2]/nyquist
+  fvec[6] <- 1.0
+  idealresponse<-c(0, 0, 1, 1, 0, 0)
+
+#  sprintf(" Filter Data in Frequency Band 80-150 Hz")
+
+  # build firls filter
+  fir_80_150<-gsignal::firls(499,fvec,idealresponse)
+  filter_80_150 <- gsignal::filtfilt(fir_80_150,tsIctal)
+  hilbert_80_150<-gsignal::hilbert(filter_80_150)
+
+  a_80_150<-abs(hilbert_80_150)
+  hilbert_a_80_150<-gsignal::hilbert(a_80_150)
+  phi_a_80_150<-np$angle(hilbert_a_80_150)
+
+
+  ##########################################
+  # Filter pre seizure baseline
+
+#  sprintf(" Filter pre seizure baseline in Frequency Band 80-150 Hz")
+  filter_80_150_baseline <- gsignal::filtfilt(fir_80_150,tsBaseline)
+  hilbert_80_150_baseline<-gsignal::hilbert(filter_80_150_baseline)
+  a_80_150_baseline<-abs(hilbert_80_150_baseline)
+
+  a_80_150_baseline<-colMeans(a_80_150_baseline)
+
+
+  plhgMaster<-matrix(0,nw,n_elec)
+
+
+  for(jj in 1:nw){
+    #jj<-1
+    #print(jj)
+    currentTime<-stepsBuffer[,jj]
+    phi_4_30_jj<-phi_4_30[currentTime,]
+    phi_a_80_150_jj<-phi_a_80_150[currentTime,]
+
+    PLV<-abs(colMeans(exp(1i*(phi_4_30_jj-phi_a_80_150_jj))))
+
+    a_80_150_jj<-a_80_150[currentTime,]
+    a_80_150_norm_jj<-colMeans(a_80_150_jj)/a_80_150_baseline
+    PLHG=a_80_150_norm_jj*PLV
+
+    PLVMaster[jj,]<-PLV
+    plhgMaster[jj,]<-PLHG
+  }
+
+  namesElectrodes<-colnames(ieegts)
+
+  colnames(plhgMaster)<-namesElectrodes
+
+  stimes<-c(1:nw)/nw*(time_window_ictal[2]-time_window_ictal[1])+time_window_ictal[2]
+
+  rownames(plhgMaster)<-stimes
+
+  return(plhgMaster)
 
 
 

@@ -35,3 +35,41 @@ visuiEEGdata<-function( ieegts, scaling, displayChannels){
 
 
 }
+
+heatmap_PLHG<-function(resPLHG, ElectrodesData,ieegts,time_window_ictal,subject_code,j){
+
+
+  titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
+  elecsoz=which(ElectrodesData$insoz==TRUE)
+  elecsozc=which(ElectrodesData$insoz==FALSE)
+  elecsozsozc=c(elecsoz,elecsozc)
+
+  elecnum <- colnames(ieegts)[elecsozsozc]
+  n_elec <- ncol(ieegts)
+  nw<- nrow(resPLHG)
+  colorelec<-elecnum
+  nsoz=length(elecsoz)
+  colorelec[1:n_elec]="black"
+  colorelec[1:nsoz]="blue"
+
+  plhgord<-resPLHG[,elecsozsozc]
+  stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1]
+  rownames(plhgord)<-stimes
+  elecnum<-colnames(plhgord)
+
+  plhgmap_data <- expand.grid(Time = stimes, Electrode = elecnum)
+  plhgmap_data$Value <- c(plhgord)
+
+  ggplot2::ggplot(plhgmap_data, ggplot2::aes(x = Time, y = Electrode, fill = Value)) +
+    ggplot2::geom_tile() +
+    ggplot2::ggtitle(titlepng)+
+    ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) +
+    viridis::scale_fill_viridis(option = "turbo") +  #
+
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text.y = ggplot2::element_text(size=3,colour=colorelec),     # Adjust depending on electrodes
+    )
+
+
+}
