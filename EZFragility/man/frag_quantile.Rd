@@ -29,11 +29,4 @@ Compute quantiles, mean and standard deviation for two electrodes group marked a
 data("fragm3sp5s")
 data("pt01Epochm3sp5s")
 data("ElectrodesDataPT01")
-ieegts=pt01Epochm3sp5s
-frag=fragm3sp5s
-fs=1000
-time_window_ictal=c(-10,10)
-t_step=150
-ElectrodesData=ElectrodesDataPT01
-
 }

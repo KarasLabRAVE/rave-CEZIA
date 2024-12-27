@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{visuiEEGdata}
 \alias{visuiEEGdata}
-\title{Visualization iEEGData}
+\title{Visualization of ictal iEEG}
 \usage{
 visuiEEGdata(ieegts, scaling, displayChannels)
 }
@@ -18,7 +18,7 @@ with time points as rows and electrodes names as columns}
 plot raw signal
 }
 \description{
-Visualization iEEGData
+Visualization of ictal iEEG
 }
 \examples{
 data("PT01Epochm30sp30s")

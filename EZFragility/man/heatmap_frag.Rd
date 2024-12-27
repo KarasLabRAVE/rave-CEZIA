@@ -7,11 +7,11 @@
 heatmap_frag(
   frag,
   ElectrodesData,
-  ieegts,
   time_window,
   option = NULL,
   subject_code,
-  j
+  j,
+  display = display
 )
 }
 \arguments{
@@ -19,14 +19,14 @@ heatmap_frag(
 
 \item{ElectrodesData}{electrodes data}
 
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
-
 \item{time_window}{Fragility heatmap time window around seizure onset}
 
 \item{subject_code}{patient name}
 
 \item{j}{seizure number}
+
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+with time points as rows and electrodes names as columns}
 }
 \value{
 Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
@@ -40,5 +40,5 @@ data("fragrankm3sp5s")
 data("pt01Epochm3sp5s")
 data("ElectrodesDataPT01")
 time_window=c(-3:5)
-heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
+heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
 }

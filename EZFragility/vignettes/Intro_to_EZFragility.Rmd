@@ -41,14 +41,61 @@ head(ElectrodesDataPT01,n=10)
 
 ```
 
+## Compute Fragility Map
+
 ## Plot a heatmap of the Fragility results for patient PT01
 
 Plot fragility heatmaps with electrodes marked as soz colored in the bottom
 ```{r plot fragility heatmap,out.width="100%"}
 data("fragm3sp5s")
-data("fragrankm3sp5s")
 data("pt01Epochm3sp5s")
 data("ElectrodesDataPT01")
 time_window=c(-3:5)
-heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
+display=c(1:nrow(fragm3sp5s))
+heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
+```
+
+
+## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
+This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
+```{r}
+data("ElectrodesDataPT01",out.width="100%")
+data("fragm3sp5s")
+data("pt01Epochm3sp5s")
+elecsoz=which(ElectrodesDataPT01$insoz==TRUE)
+display=c(elecsoz,c(77:80))
+ElectrodesDataDisplay=ElectrodesDataPT01[display,]
+time_window=c(-3:5)
+fragdisplay=fragm3sp5s[display,]
+heatmap_frag(frag=fragdisplay,ElectrodesData=ElectrodesDataDisplay,time_window=c(-3,5),subject_code='pt01',j=1)
+
+```
+
+## Compute electrodes statistics of fragility map 
+
+Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+```{r compute_frag_stat, eval=FALSE}
+data("fragm3sp5s")
+data("pt01Epochm3sp5s")
+data("ElectrodesDataPT01")
+fs=1000
+time_window_ictal=c(-10,10)
+t_step=150
+fragstat=frag_quantile(ieegts=pt01Epochm3sp5s, frag=fragm3sp5s, t_step=t_step, ElectrodesData=ElectrodesDataPT01, fs=fs, time_window_ictal=time_window_ictal)
+```
+
+## Plot Fragility distribution
+Plot fragility distribution for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_auantile,out.width="100%"}
+data("fragstat")
+time_window_ictal=c(-10,10)
+plot_frag_distribution( cmeansoz=fragstat[[2]],cmeansozc=fragstat[[3]],csdsoz=fragstat[[4]],csdsozc=fragstat[[5]],time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+```
+
+## Plot fragility quantile
+Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_auantile,out.width="100%"}
+data("fragstat")
+time_window_ictal=c(-10,10)
+plot_frag_quantile( quantilematrixsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
 ```
