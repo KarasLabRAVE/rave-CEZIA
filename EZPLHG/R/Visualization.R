@@ -58,8 +58,8 @@ visuiEEGdata<-function( ieegts, scaling, displayChannels){
 #'time_window_ictal=c(-10,10)
 #'subject_code='PT01'
 #'j=1
-#'heatmap_PLHG(resPLHG=resPLHG, ElectrodesData=ElectrodesDataPT01,ieegts=PT01Epochm30sp30s,time_window_ictal,subject_code,j)
-heatmap_PLHG<-function(resPLHG, ElectrodesData,ieegts,time_window_ictal,subject_code,j){
+#'heatmap_PLHG(plhgMaster=resPLHG[[1]], ElectrodesData=ElectrodesDataPT01,ieegts=PT01Epochm30sp30s,time_window_ictal,subject_code,j)
+heatmap_PLHG<-function(plhgMaster, ElectrodesData,ieegts,time_window_ictal,subject_code,j){
 
 
   titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
@@ -69,13 +69,13 @@ heatmap_PLHG<-function(resPLHG, ElectrodesData,ieegts,time_window_ictal,subject_
 
   elecnum <- colnames(ieegts)[elecsozsozc]
   n_elec <- ncol(ieegts)
-  nw<- nrow(resPLHG)
+  nw<- nrow(plhgMaster)
   colorelec<-elecnum
   nsoz=length(elecsoz)
   colorelec[1:n_elec]="black"
   colorelec[1:nsoz]="blue"
 
-  plhgord<-resPLHG[,elecsozsozc]
+  plhgord<-plhgMaster[,elecsozsozc]
   stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1]
   rownames(plhgord)<-stimes
   elecnum<-colnames(plhgord)

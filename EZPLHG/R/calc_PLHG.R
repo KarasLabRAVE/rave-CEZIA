@@ -159,8 +159,52 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
   rownames(plhgMaster)<-stimes
 
-  return(plhgMaster)
+  return(list(
+    plhgMaster=plhgMaster,
+    timeVals=timeVals
+    ))
 
 
 
+}
+
+votethres<-function(resPLHG,fs,ElectrodesData,time_window_ictal){
+
+  plhgMaster<-resPLHG[[1]]
+  timeVals<-resPLHG[[2]]
+  maxVal<-apply(plhgMaster,2,max)
+  mu<-mean(maxVal)
+  sigma<-sd(maxVal)
+  coeffVar<-sigma/mu
+  mu=mean(plhgMaster)
+  sigma<-sd(plhgMaster)
+  sigThres<-mu+sigma*2.5
+  sigLeads<-maxVal>sigThres
+
+  nel<-ncol(plhgMaster)
+
+  sigTime<-matrix(NaN,1,nel)
+
+  votethres   <- vector(mode="numeric", length=nel)
+
+  for(jj in 1:nel){
+    if(sigLeads[jj]==TRUE){
+      votethres[jj]=1
+    }
+    currentInd<-which(plhgMaster[,jj]>=sigThres)
+    if(length(currentInd)>0){
+      #print(jj)
+      sigTime[1,jj]=timeVals[currentInd[1]]/fs
+    }
+  }
+
+  elecsoz=which(ElectrodesData$insoz==TRUE)
+  elecsozc=which(ElectrodesData$insoz==FALSE)
+  elecsozsozc=c(elecsoz,elecsozc)
+
+  votethres<-votethres[elecsozsozc]
+  sigTime[1,]<-sigTime[1,elecsozsozc]+time_window_ictal[1]
+
+  resvotethres<-data.frame(elecsozsozc,ElectrodesData$nameselec[elecsozsozc],votethres,sigTime[1,])
+  return(resvotethres)
 }
