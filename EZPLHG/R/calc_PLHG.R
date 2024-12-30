@@ -170,6 +170,9 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
 #' Ictal core recruitment
 #'
+#' Electrode classification in Ictal core derived from
+#' PLHG values increasing to 2.5SD over the mean
+#'
 #' @param resPLHG PLHG values
 #' @param fs signal acquisition frequency
 #' @param ElectrodesData Electrodes data names, soz/non soz epileptologist marking

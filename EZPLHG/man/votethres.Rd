@@ -19,7 +19,8 @@ votethres(resPLHG, fs, ElectrodesData, time_window_ictal)
 electrode classification with PLHG values increasing to 2.5SD over the mean
 }
 \description{
-Ictal core recruitment
+Electrode classification in Ictal core derived from
+PLHG values increasing to 2.5SD over the mean
 }
 \examples{
 data("ElectrodesDataPT01")

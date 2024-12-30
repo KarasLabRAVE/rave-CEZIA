@@ -79,4 +79,5 @@ subject_code='PT01'
 j=1
 fs=1000
 resvotethres<-votethres(resPLHG=resPLHG,fs=fs,ElectrodesData=ElectrodesData,time_window_ictal=time_window_ictal)
+ictalcore=which(resvotethres$votethres==1)
 ```
