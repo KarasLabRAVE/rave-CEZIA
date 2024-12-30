@@ -71,7 +71,6 @@ heatmap_PLHG(plhgMaster=resPLHG[[1]], ElectrodesData=ElectrodesDataPT01,ieegts=P
 
 ## Vote Threshold
 ```{r vote threshold}
-data("PT01Epochm30sp30s")
 data("ElectrodesDataPT01")
 data("resPLHG")
 ElectrodesData=ElectrodesDataPT01

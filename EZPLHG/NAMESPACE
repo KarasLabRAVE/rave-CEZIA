@@ -3,3 +3,4 @@
 export(calc_PLHG)
 export(heatmap_PLHG)
 export(visuiEEGdata)
+export(votethres)

@@ -168,6 +168,25 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
 }
 
+#' Ictal core recruitment
+#'
+#' @param resPLHG PLHG values
+#' @param fs signal acquisition frequency
+#' @param ElectrodesData Electrodes data names, soz/non soz epileptologist marking
+#' @param time_window_ictal time window around seizure onset
+#'
+#' @return electrode classification with PLHG values increasing to 2.5SD over the mean
+#' @export
+#'
+#' @examples
+#' data("ElectrodesDataPT01")
+#' data("resPLHG")
+#' ElectrodesData=ElectrodesDataPT01
+#' time_window_ictal=c(-10,10)
+#' subject_code='PT01'
+#' j=1
+#' fs=1000
+#' resvotethres<-votethres(resPLHG=resPLHG,fs=fs,ElectrodesData=ElectrodesData,time_window_ictal=time_window_ictal)
 votethres<-function(resPLHG,fs,ElectrodesData,time_window_ictal){
 
   plhgMaster<-resPLHG[[1]]
@@ -207,4 +226,5 @@ votethres<-function(resPLHG,fs,ElectrodesData,time_window_ictal){
 
   resvotethres<-data.frame(elecsozsozc,ElectrodesData$nameselec[elecsozsozc],votethres,sigTime[1,])
   return(resvotethres)
+
 }

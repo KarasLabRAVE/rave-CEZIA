@@ -5,7 +5,7 @@
 \title{Heatmap visualization}
 \usage{
 heatmap_PLHG(
-  resPLHG,
+  plhgMaster,
   ElectrodesData,
   ieegts,
   time_window_ictal,
@@ -14,8 +14,6 @@ heatmap_PLHG(
 )
 }
 \arguments{
-\item{resPLHG}{Matrix result of PLHG}
-
 \item{ElectrodesData}{Electrodes data}
 
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -26,6 +24,8 @@ with time points as rows and electrodes names as columns}
 \item{subject_code}{patient name}
 
 \item{j}{seizure number}
+
+\item{resPLHG}{Matrix result of PLHG}
 }
 \value{
 Heatmap plot of the PLHG matrix with soz electrodes in blue in the bottom
@@ -41,5 +41,5 @@ ElectrodesData=ElectrodesDataPT01
 time_window_ictal=c(-10,10)
 subject_code='PT01'
 j=1
-heatmap_PLHG(resPLHG=resPLHG, ElectrodesData=ElectrodesDataPT01,ieegts=PT01Epochm30sp30s,time_window_ictal,subject_code,j)
+heatmap_PLHG(plhgMaster=resPLHG[[1]], ElectrodesData=ElectrodesDataPT01,ieegts=PT01Epochm30sp30s,time_window_ictal,subject_code,j)
 }
