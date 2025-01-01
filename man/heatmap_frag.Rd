@@ -18,7 +18,7 @@ heatmap_frag(
 
 \item{elecsoz}{Integer. Vector soz electrodes (for good electrodes)}
 
-\item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset}
+\item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
 \item{title}{String. Figure title}
 

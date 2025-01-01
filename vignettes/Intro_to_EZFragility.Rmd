@@ -62,7 +62,7 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3:5)
 display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
 
 
 ```
@@ -70,14 +70,10 @@ heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
 ## Compute electrodes statistics of fragility map 
 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
-```{r compute_frag_stat, eval=FALSE}
+```{r compute_frag_stat, eval=TRUE}
 data("fragm3sp5s")
-data("pt01Epochm3sp5s")
-data("ElectrodesDataPT01")
-fs=1000
-time_window_ictal=c(-10,10)
-t_step=150
-fragstat=frag_quantile(ieegts=pt01Epochm3sp5s, frag=fragm3sp5s, t_step=t_step, ElectrodesData=ElectrodesDataPT01, fs=fs, time_window_ictal=time_window_ictal)
+data("elecsoz")
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 ```
 
 ## Plot Fragility distribution

@@ -4,7 +4,7 @@
 #'
 #' @param frag Numeric. Fragility matrix results
 #' @param elecsoz Integer. Vector soz electrodes (for good electrodes)
-#' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset
+#' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param title String. Figure title
 #' @param display Integer. Electrodes to display
 #'
@@ -13,10 +13,10 @@
 #'
 #' @examples
 #' data("fragm3sp5s")
-#'data("elecsoz")
-#'time_window=c(-3:5)
-#'display=c(elecsoz,77:80)
-#'heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+#' data("elecsoz")
+#' time_window=c(-3:5)
+#' display=c(elecsoz,77:80)
+#' heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
 heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 1",display=display){
   
   titlepng=title
