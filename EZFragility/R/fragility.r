@@ -1,9 +1,7 @@
 #' Compute the normalized fragility row for adjacency matrix A
-#'
-#' @param A. Numeric. Adjacency Matrix  
-#' @param nSearch. Integer. Number of eigenvalues tried to find the minimum norm vector 
 #' 
-
+#' @param A Numeric. Adjacency Matrix  
+#' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector 
 fragilityRowNormalized <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper
@@ -76,7 +74,6 @@ fragilityRowNormalized <- function(A, nSearch = 100) {
 #' Compute the fragility row for adjacency matrix A
 #'
 #' @inheritParams fragilityRowNormalized
-#'
 fragilityRow <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper

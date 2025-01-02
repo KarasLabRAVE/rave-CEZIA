@@ -1,0 +1,39 @@
+---
+output:
+  md_document:
+    variant: gfm
+html_preview: false
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+library("badger")
+```
+
+# EZFragility: Epileptogenic Zone Localization Based on Fragility Index
+```{r, echo = FALSE, results='asis', warning=FALSE, message=FALSE}
+url <- "Jiefei-Wang/EZFragility"
+cat(
+	badge_devel(url, "blue"),
+    badge_lifecycle("experimental"),
+    badge_code_size(url),
+    badge_last_commit(url),
+    # badge_dependencies(),
+	  "[![R-CMD-check](https://github.com/Jiefei-Wang/Fragility/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Jiefei-Wang/Fragility/actions/workflows/R-CMD-check.yaml)",
+    "[![Codecov test coverage](https://codecov.io/gh/Jiefei-Wang/Fragility/graph/badge.svg)](https://app.codecov.io/gh/Jiefei-Wang/Fragility)"
+)
+
+
+```
+
+To load the package
+```r
+devtools::load_all()
+```
+
+The package contains an example data. To see it, type
+```r
+ptEpoch
+```
+For your test code, please consider creating a folder scripts and put your code there. This folder will be ignored by git.
