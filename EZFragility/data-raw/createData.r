@@ -1,4 +1,5 @@
 ## load pt01epochdata.mat
+## Patient PT01 from the Fragility data set
 
 library(R.matlab)
 library(readxl)
@@ -7,8 +8,10 @@ pt01Epoch <- data$a
 
 ## add channel names to the rows
 goodChannels <- c(1:4,7:36,42:43,46:69,72:95)
+sozChannels<-c(33:34,62:69)
 channelNames <- read_excel('data-raw/Pt01ictalRun01EcoGChannels.xls')
 rownames(pt01Epoch) <- channelNames$name[goodChannels]
+elecsoz<-which(goodChannels%in%sozChannels==TRUE)
 
 ## Add time stamps to the columns
 times <- seq(-10, 10, length.out=ncol(pt01Epoch))
@@ -22,3 +25,5 @@ usethis::use_data(pt01Epoch, overwrite = TRUE)
 
 pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
 usethis::use_data(pt01Epochm1sp2s, overwrite = TRUE)
+
+usethis::use_data(elecsoz, overwrite = TRUE)

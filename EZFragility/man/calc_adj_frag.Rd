@@ -42,7 +42,7 @@ such that
 option Lambda=NULL ensures that the matrix is stable
 
 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
-for column perturbation is computed
+for column perturbation is computed.
 Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 }
 \examples{
