@@ -18,8 +18,6 @@
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
-#' @param title. String. Patient and seizure names for results saving
-#' @param pathres. String. Path to save results file
 #' 
 #' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
@@ -39,9 +37,7 @@
 #' t_step <- 125
 #' lambda <- NULL
 #' nSearch=100
-#' title="PT01 seizure 1"
-#' pathres='~/'
-#' resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
+#' resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 #' }
 #' 
 #' 
@@ -57,7 +53,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch, title, pathres) {
+calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))
@@ -148,8 +144,6 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch, titl
     attributes(f_rank) <- attributes(f)
     f_rank <- f_rank / max(f_rank)
 
-    resfile=paste(pathres,'FragilityRes',title,'.csv',sep="")
-    write.csv(f,resfile)
     
     return(list(
         voltage = ieegts,
