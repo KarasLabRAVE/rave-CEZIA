@@ -39,7 +39,9 @@ t_window <- 250
 t_step <- 125
 lambda <- NULL
 nSearch=100
-resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+title="PT01 seizure 1"
+pathres='~/'
+resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01
@@ -50,7 +52,8 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3,5)
 display=c(1:nrow(fragm3sp5s))
-heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+pathplot='~/'
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=time_window,title="PT01 seizure 1",display=display,pathplot=pathplot)
 ```
 
 
@@ -61,9 +64,7 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3:5)
 display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
-
-
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
 ```
 
 ## Compute electrodes statistics of fragility map 
