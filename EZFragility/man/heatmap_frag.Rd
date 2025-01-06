@@ -8,9 +8,9 @@ heatmap_frag(
   frag,
   elecsoz,
   time_window,
-  title = "PT01 seizure 1",
-  display = NULL,
-  pathplot = ""
+  option = NULL,
+  title = "Fragility heatmap",
+  display = NULL
 )
 }
 \arguments{
@@ -23,8 +23,6 @@ heatmap_frag(
 \item{title}{String. Figure title}
 
 \item{display}{Integer. Electrodes to display}
-
-\item{pathplot}{String. File Path to save plot}
 }
 \value{
 Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
@@ -37,5 +35,5 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3:5)
 display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
 }

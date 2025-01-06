@@ -7,7 +7,6 @@
 #' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param title String. Figure title
 #' @param display Integer. Electrodes to display
-#' @param pathplot String. File Path to save plot
 #'
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #'
@@ -16,9 +15,9 @@
 #' data("elecsoz")
 #' time_window=c(-3:5)
 #' display=c(elecsoz,77:80)
-#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
 #' @export
-heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=NULL,pathplot=''){
+heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility heatmap",display=NULL){
   titlepng<-title
   if(is.null(display)){
     display<-1:nrow(frag)
@@ -57,11 +56,6 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4,colour=colorelec),     # Adjust depending on electrodes
     )
-
-  if(pathplot!=''){
-    resfile=paste(pathplot,'FragilityHeatMap',title,'.png',sep="")
-    ggplot2::ggsave(resfile)
-  }
 }
 
 #' Visualization of ictal iEEG 

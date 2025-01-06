@@ -8,10 +8,13 @@
 #' with time points as rows and electrodes names as columns
 #' @param sizeWindow Integer. The number of time points to use in each window
 #' @param sizeSkip Integer.The number of time points to move the window each time
-#' @param fs Acquisition frequency
-#' @param tBaseline baseline duration in seconds
+#' @param fs Numeric. Acquisition frequency
+#' @param tBaseline Numeric. baseline duration in seconds
 #'
-#' @return plhgMaster matrix of PLHG values
+#' @return list
+#' plhgMaster. Numeric. matrix of PLHG values. row number of time window. column electrode number
+#' timeVals. Integer. List of window start
+#'
 #' @export
 #'
 #' @examples
@@ -155,7 +158,7 @@ calc_PLHG<- function(ieegts,sizeWindow,sizeSkip,fs,tBaseline,time_window_ictal,t
 
   colnames(plhgMaster)<-namesElectrodes
 
-  stimes<-c(1:nw)/nw*(time_window_ictal[2]-time_window_ictal[1])+time_window_ictal[2]
+  stimes<-c(1:nw)/nw*(time_window_ictal[2]-time_window_ictal[1])+time_window_ictal[1]
 
   rownames(plhgMaster)<-stimes
 
