@@ -12,7 +12,32 @@
 #'
 #' @examples
 #' # use integer index for display and soz electrodes
-
+#'data("fragm3sp5s")
+#'data("sozindex")
+#'time_window=c(-3,5)
+#'display=c(sozindex,77:80)
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+#'fragplot
+#'
+#' # use electrodes name for display and soz electrodes
+#'data("fragm3sp5s")
+#'data("soznames")
+#'time_window=c(-3,5)
+#'display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+#'fragplot
+#'
+#' # save plot to file with ggplot2
+#'data("fragm3sp5s")
+#'data("sozindex")
+#'time_window=c(-3,5)
+#'display=c(sozindex,77:80)
+#'pathplot="~"
+#'title="PT01sz1"
+#'resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title=title,display=display)
+#'fragplot
+#'ggplot2::ggsave(resfile)
 #' 
 #' @export
 heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=NULL){
@@ -69,7 +94,7 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
   p<-p+ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) 
   p<-p+viridis::scale_fill_viridis(option = "turbo")   #
   p<-p+geom_vline(xintercept =0, 
-                  color = "black", linetype = "dashed", size = 2)
+                  color = "black", linetype = "dashed", size = 1)
   p<-p+ggplot2::theme_minimal() 
   p<-p+ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=6,colour=colorelec),     # Adjust depending on electrodes
@@ -85,17 +110,22 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
 #' with time points as rows and electrodes names as columns
 #' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
 #' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
+#' @param title String. Figure title
 #' @param display Integer or string. Vector electrodes to display
 #' @return plot raw signal
 #'
 #' @examples
-#' data("pt01Epochm3sp5s")
-#' data("sozindex")
-#' display=c(sozindex,77:80)
-#' time_window=c(-3,5)
-#' visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
+#'data("pt01Epochm3sp5s")
+#'data("sozindex")
+#'display=c(sozindex,77:80)
+#'time_window=c(-3,5)
+#'iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
+#'iEEGplot
 #' @export
-visuiEEGdata<-function(ieegts, elecsoz, time_window, display=NULL){
+visuiEEGdata<-function(ieegts, elecsoz, time_window, title="PT01 seizure 1", display=NULL){
+  
+  titlepng<-title
+  
   
   scaling <- 10^floor(log10(max(ieegts)))
   plotData<-ieegts[,display]/scaling
@@ -109,16 +139,24 @@ visuiEEGdata<-function(ieegts, elecsoz, time_window, display=NULL){
        (ncol(plotData)-i)*gaps
   }
   plotData<-data.frame(plotData)
+  breakplot=(c(1:n_elec)-1)*gaps
+  bplotstring=as.character(breakplot)
  
   ggplot2::theme_set(theme_minimal())
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=stimes,y=plotData))
+  p<-p+ggplot2::ggtitle(titlepng)
+  p<-p+ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) 
+  p<-p+geom_vline(xintercept =0, 
+                  color = "black", linetype = "dashed", size = 1)
+  
   for(i in 1:n_elec){
-  p<-p+ggplot2::geom_line(ggplot2::aes_string(y=names(plotData)[i]))
-  #print(i)
-  #p<-p+ggplot2::geom_line(ggplot2::aes(y=plotData[,2]))
-    
+      p<-p+ggplot2::geom_line(ggplot2::aes_string(y=names(plotData)[i]))
   }
-  p
+  displayNames=rev(displayNames)
+  p<-p+ggplot2::scale_y_continuous(labels=displayNames,breaks=breakplot)
+  #p<-p+ggplot2::scale_y_discrete(labels=displayNames)
+  
+  return(p)
 
 }
 

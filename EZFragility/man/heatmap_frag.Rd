@@ -35,16 +35,18 @@ data("fragm3sp5s")
 data("sozindex")
 time_window=c(-3,5)
 display=c(sozindex,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+fragplot
 
-# use electrodes names for display and soz electrodes
+# use electrodes name for display and soz electrodes
 data("fragm3sp5s")
 data("soznames")
 time_window=c(-3,5)
 display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+fragplot
 
-# save heatmap to file
+# save plot to file with ggplot2
 data("fragm3sp5s")
 data("sozindex")
 time_window=c(-3,5)
@@ -52,6 +54,8 @@ display=c(sozindex,77:80)
 pathplot="~"
 title="PT01sz1"
 resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=c(-3,5),title=title,display=display)|>ggplot2::ggsave(resfile)
+fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title=title,display=display)
+fragplot
+ggplot2::ggsave(resfile)
 
 }
