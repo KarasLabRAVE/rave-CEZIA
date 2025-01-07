@@ -12,28 +12,7 @@
 #'
 #' @examples
 #' # use integer index for display and soz electrodes
-#' data("fragm3sp5s")
-#' data("sozindex")
-#' time_window=c(-3,5)
-#' display=c(sozindex,77:80)
-#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
-#' 
-#' # use electrodes names for display and soz electrodes
-#' data("fragm3sp5s")
-#' data("soznames")
-#' time_window=c(-3,5)
-#' display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
-#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
-#' 
-#' # save heatmap to file
-#'data("fragm3sp5s")
-#'data("sozindex")
-#'time_window=c(-3,5)
-#'display=c(sozindex,77:80)
-#'pathplot="~"
-#'title="PT01sz1"
-#'resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-#'heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=c(-3,5),title=title,display=display)|>ggplot2::ggsave(resfile)
+
 #' 
 #' @export
 heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=NULL){
@@ -67,28 +46,36 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
   nw<- ncol(fragdisplay)
   colorelec<-elecnum
   nsoz=length(elecsoz)
-  colorelec[1:n_elec]="black"
-  colorelec[1:nsoz]="blue"
+  colorelec[1:n_elec]="blue"
+  nb=n_elec-nsoz
+  colorelec[1:nb]="black"
 
+  elecsozsozc=rev(elecsozsozc)
   fragord<-fragdisplay[elecsozsozc,]
   fragdf<-data.frame(fragord)
   stimes=c(1:nw)*(time_window[2]-time_window[1])/nw+time_window[1]
   colnames(fragdf)<-stimes
   rownames(fragdf)<-elecnum
   
+  elecnum<-rev(elecnum)
+  
   fragmap_data <- expand.grid(Time = stimes, Electrode = elecnum)
   fragmap_data$Value <- c(t(fragord))
   
-  ggplot2::ggplot(fragmap_data, ggplot2::aes(x = Time, y = Electrode, fill = Value)) +
-    ggplot2::geom_tile() +
-    ggplot2::ggtitle(titlepng)+
-    ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) +
-    viridis::scale_fill_viridis(option = "turbo") +  #
-    
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      axis.text.y = ggplot2::element_text(size=4,colour=colorelec),     # Adjust depending on electrodes
+  p<-ggplot2::ggplot(fragmap_data, ggplot2::aes(x = Time, y = Electrode, fill = Value)) 
+  p<-p+ggplot2::geom_tile() 
+  p<-p+ggplot2::ggtitle(titlepng)
+    #ggplot2::theme(plot.title=ggplot2::element_text(hjust=0.5))+
+  p<-p+ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) 
+  p<-p+viridis::scale_fill_viridis(option = "turbo")   #
+  p<-p+geom_vline(xintercept =0, 
+                  color = "black", linetype = "dashed", size = 2)
+  p<-p+ggplot2::theme_minimal() 
+  p<-p+ggplot2::theme(
+      axis.text.y = ggplot2::element_text(size=6,colour=colorelec),     # Adjust depending on electrodes
     )
+  
+  return(p)
 
 }
 
@@ -96,6 +83,8 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
 #' with time points as rows and electrodes names as columns
+#' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
+#' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param display Integer or string. Vector electrodes to display
 #' @return plot raw signal
 #'

@@ -33,21 +33,21 @@ plot fragility heatmaps with electrodes marked as soz colored
 # use integer index for display and soz electrodes
 data("fragm3sp5s")
 data("sozindex")
-time_window=c(-3:5)
+time_window=c(-3,5)
 display=c(sozindex,77:80)
 heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
 
 # use electrodes names for display and soz electrodes
 data("fragm3sp5s")
 data("soznames")
-time_window=c(-3:5)
+time_window=c(-3,5)
 display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
 heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
 
 # save heatmap to file
 data("fragm3sp5s")
 data("sozindex")
-time_window=c(-3:5)
+time_window=c(-3,5)
 display=c(sozindex,77:80)
 pathplot="~"
 title="PT01sz1"
