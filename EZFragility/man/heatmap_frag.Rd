@@ -8,21 +8,20 @@ heatmap_frag(
   frag,
   elecsoz,
   time_window,
-  option = NULL,
-  title = "Fragility heatmap",
+  title = "PT01 seizure 1",
   display = NULL
 )
 }
 \arguments{
 \item{frag}{Numeric. Fragility matrix results}
 
-\item{elecsoz}{Integer. Vector soz electrodes (for good electrodes)}
+\item{elecsoz}{Integer or string. Vector soz electrodes (for good electrodes)}
 
 \item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
 \item{title}{String. Figure title}
 
-\item{display}{Integer. Electrodes to display}
+\item{display}{Integer or string. Vector electrodes to display}
 }
 \value{
 Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
@@ -31,9 +30,28 @@ Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
+# use integer index for display and soz electrodes
 data("fragm3sp5s")
-data("elecsoz")
+data("sozindex")
 time_window=c(-3:5)
-display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
+display=c(sozindex,77:80)
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+
+# use electrodes names for display and soz electrodes
+data("fragm3sp5s")
+data("soznames")
+time_window=c(-3:5)
+display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+
+# save heatmap to file
+data("fragm3sp5s")
+data("sozindex")
+time_window=c(-3:5)
+display=c(sozindex,77:80)
+pathplot="~"
+title="PT01sz1"
+resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
+heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=c(-3,5),title=title,display=display)|>ggplot2::ggsave(resfile)
+
 }

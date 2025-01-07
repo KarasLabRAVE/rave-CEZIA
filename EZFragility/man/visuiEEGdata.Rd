@@ -4,7 +4,7 @@
 \alias{visuiEEGdata}
 \title{Visualization of ictal iEEG}
 \usage{
-visuiEEGdata(ieegts, scaling, displayChannels)
+visuiEEGdata(ieegts, scaling = 1e+06, display = NULL)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -12,7 +12,7 @@ with time points as rows and electrodes names as columns}
 
 \item{scaling}{Numeric. Scaling factor}
 
-\item{displayChannels}{Integer. Channels evctor to display}
+\item{display}{Integer or string. Vector electrodes to display}
 }
 \value{
 plot raw signal
@@ -21,8 +21,8 @@ plot raw signal
 Visualization of ictal iEEG
 }
 \examples{
-data("PT01Epochm30sp30s")
-data("ElectrodesDataPT01")
-displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
-visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
+data("pt01Epochm3sp5s")
+data("sozindex")
+display=sozindex
+visuiEEGdata(ieegts=PT01Epochm30sp30s,scaling=1000000, display=display)
 }

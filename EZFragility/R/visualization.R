@@ -3,32 +3,65 @@
 #' plot fragility heatmaps with electrodes marked as soz colored
 #'
 #' @param frag Numeric. Fragility matrix results
-#' @param elecsoz Integer. Vector soz electrodes (for good electrodes)
+#' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
 #' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param title String. Figure title
-#' @param display Integer. Electrodes to display
+#' @param display Integer or string. Vector electrodes to display
 #'
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #'
 #' @examples
+#' # use integer index for display and soz electrodes
 #' data("fragm3sp5s")
-#' data("elecsoz")
-#' time_window=c(-3:5)
-#' display=c(elecsoz,77:80)
-#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
+#' data("sozindex")
+#' time_window=c(-3,5)
+#' display=c(sozindex,77:80)
+#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+#' 
+#' # use electrodes names for display and soz electrodes
+#' data("fragm3sp5s")
+#' data("soznames")
+#' time_window=c(-3,5)
+#' display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
+#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
+#' 
+#' # save heatmap to file
+#'data("fragm3sp5s")
+#'data("sozindex")
+#'time_window=c(-3,5)
+#'display=c(sozindex,77:80)
+#'pathplot="~"
+#'title="PT01sz1"
+#'resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
+#'heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=c(-3,5),title=title,display=display)|>ggplot2::ggsave(resfile)
+#' 
 #' @export
-heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility heatmap",display=NULL){
+heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=NULL){
   titlepng<-title
   if(is.null(display)){
     display<-1:nrow(frag)
   }
-  fragdisplay<-frag[display,]
+
+  elecname<-rownames(frag)
+  if(typeof(display)=="integer"){  
+    displayid<-display
+  }else{
+    
+    displayid<-which(elecname%in%display)
+  }
+  fragdisplay<-frag[displayid,]
   n_elec <- nrow(fragdisplay)
   electot<-c(1:n_elec)
   
-  elecsozd=which(display%in%elecsoz)
-  elecsozcd=which(!display%in%elecsoz)
-  elecsozsozc=c(elecsozd,elecsozcd)
+  if(typeof(elecsoz)=="integer"){  
+    elecsozi<-elecsoz
+  }else{
+    elecsozid<-which(elecname%in%elecsoz)
+  }
+
+  elecsozd<-which(displayid%in%elecsozi)
+  elecsozcd<-which(!displayid%in%elecsozi)
+  elecsozsozc<-c(elecsozd,elecsozcd)
 
   elecnum <- rownames(fragdisplay)
   nw<- ncol(fragdisplay)
@@ -56,42 +89,48 @@ heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility hea
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4,colour=colorelec),     # Adjust depending on electrodes
     )
+
 }
 
 #' Visualization of ictal iEEG 
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
 #' with time points as rows and electrodes names as columns
-#' @param scaling Numeric. Scaling factor
-#' @param displayChannels Integer. Channels evctor to display
-#'
+#' @param display Integer or string. Vector electrodes to display
 #' @return plot raw signal
 #'
 #' @examples
-#' data("PT01Epochm30sp30s")
-#' data("ElectrodesDataPT01")
-#' displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
-#' visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
+#' data("pt01Epochm3sp5s")
+#' data("sozindex")
+#' display=c(sozindex,77:80)
+#' time_window=c(-3,5)
+#' visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
 #' @export
-visuiEEGdata<-function(ieegts, scaling, displayChannels){
-  plotData<-ieegts[,displayChannels]/scaling
+visuiEEGdata<-function(ieegts, elecsoz, time_window, display=NULL){
+  
+  scaling <- 10^floor(log10(max(ieegts)))
+  plotData<-ieegts[,display]/scaling
   gaps<-2
-  displayNames=colnames(ieegts)[displayChannels]
-  
-  for(i in seq_along(plotData)){
-    plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
-      (ncol(plotData)-i)*gaps
+  displayNames=colnames(ieegts)[display]
+  n_elec<-length(display)
+  nt=nrow(plotData)
+  stimes<-(1:nt)*(time_window[2]-time_window[1])/nt+time_window[1]
+  for(i in 1:ncol(plotData)){
+     plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
+       (ncol(plotData)-i)*gaps
   }
-  
-  plot(plotData[, 1],type="l" ,cex=0.1,
-       ylim = range(plotData), yaxt = "n")
-  for(i in 2:ncol(plotData)){
-    lines(plotData[, i])
+  plotData<-data.frame(plotData)
+ 
+  ggplot2::theme_set(theme_minimal())
+  p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=stimes,y=plotData))
+  for(i in 1:n_elec){
+  p<-p+ggplot2::geom_line(ggplot2::aes_string(y=names(plotData)[i]))
+  #print(i)
+  #p<-p+ggplot2::geom_line(ggplot2::aes(y=plotData[,2]))
+    
   }
-  axis(2, at = rev(seq_along(displayChannels) - 1)*gaps,
-       labels = displayNames,las=1)
-  
-  
+  p
+
 }
 
 #' Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
