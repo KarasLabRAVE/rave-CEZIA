@@ -53,23 +53,26 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure numb
     
     displayid<-which(elecname%in%display)
   }
-  fragdisplay<-frag[displayid,]
-  n_elec <- nrow(fragdisplay)
-  electot<-c(1:n_elec)
   
   if(typeof(elecsoz)=="integer"){  
-    elecsozi<-elecsoz
+    elecsozid<-elecsoz
   }else{
     elecsozid<-which(elecname%in%elecsoz)
   }
 
-  elecsozd<-which(displayid%in%elecsozi)
-  elecsozcd<-which(!displayid%in%elecsozi)
+  elecsozd<-which(displayid%in%elecsozid)
+  elecsozcd<-which(!displayid%in%elecsozid)
   elecsozsozc<-c(elecsozd,elecsozcd)
+  fragdisplay<-frag[displayid,]
+  
+  displayid<-elecsozsozc
 
-  elecnum <- rownames(fragdisplay)
+  n_elec <- nrow(fragdisplay)
+  electot<-c(1:n_elec)
+  
+  #elecnum<-rev(elecnum)
   nw<- ncol(fragdisplay)
-  colorelec<-elecnum
+  colorelec<-c(1:n_elec)
   nsoz<-length(elecsoz)
   colorelec[1:n_elec]<-"blue"
   nb<-n_elec-nsoz
@@ -77,13 +80,13 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure numb
 
   elecsozsozc<-rev(elecsozsozc)
   fragord<-fragdisplay[elecsozsozc,]
+  elecnum <- rownames(fragord)
+  
   fragdf<-data.frame(fragord)
   stimes<-c(1:nw)*(time_window[2]-time_window[1])/nw+time_window[1]
   colnames(fragdf)<-stimes
   rownames(fragdf)<-elecnum
-  
-  elecnum<-rev(elecnum)
-  
+
   fragmap_data <- expand.grid(Time = stimes, Electrode = elecnum)
   fragmap_data$Value <- c(t(fragord))
 

@@ -2,29 +2,23 @@
 % Please edit documentation in R/fragility.r
 \name{frag_stat}
 \alias{frag_stat}
-\title{Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz}
+\title{Compute  mean and standard deviation for two electrodes group marked as soz non marked as soz}
 \usage{
-frag_stat(frag, elecsoz)
+frag_stat(frag, elecsoz = NULL)
 }
 \arguments{
 \item{frag}{Numeric. Fragility matrix. Row Electrode names. Column index}
 
 \item{elecsoz}{Integer.  Vector soz electrodes (for good electrodes)}
-
-\item{t_step}{Integer. Fragility step size}
-
-\item{fs}{Numeric. Acquisition frequency (Hz)}
-
-\item{time_window_ictal}{Numeric.Time window around seizure onset (s)}
 }
 \value{
-list of 5 items with quantile matrix, mean and sdv from both electrodes groups
+list of 4 items with mean and sdv from both electrodes groups
 }
 \description{
-Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+Compute  mean and standard deviation for two electrodes group marked as soz non marked as soz
 }
 \examples{
 data("fragm3sp5s")
-data("elecsoz")
-fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+sozindex<-attr(fragm3sp5s,"sozindex")
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 }

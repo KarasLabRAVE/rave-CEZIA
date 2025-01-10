@@ -1,4 +1,4 @@
-#' Pt01 seizure 1 (-10:10s) around seizure onset
+#' Pt01 seizure 1 around seizure onset
 #' 
 #' This data corresponds to the first seizure of patient PT01 from 
 #' the Fragility Data Set.
