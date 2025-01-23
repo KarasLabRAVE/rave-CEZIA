@@ -25,35 +25,24 @@ The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.796
 
 ## Load small ictal ieeg data for patient PT01
 
-This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE. It has been epoched -3:5s around the seizure onset. The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 8001 rows (time points) and 84 columns (electrodes). The columns names are the electrodes names. The row names is the time relative to seizure onset in (s).
+This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -3:5s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 8001 rows (time points) and 84 columns (electrodes). The columns names are the electrodes names. The row names is the time relative to seizure onset in (s)
+
 
 ```{r ictal data}
 data("pt01Epochm3sp5s")
 head(pt01Epochm3sp5s)
-```
-
-The electrodes marked as soz by an epileptologist in this public data are attributes of the signal data frame
-```{r electrodessoz}
-# as index
+# seizure onset (soz) electrodes indices
 sozindex<-attr(pt01Epochm3sp5s,"sozindex")
-# as names
+# seizure onset electrodes names
 soznames<-attr(pt01Epochm3sp5s,"soznames")
+# test patient data for consistency of soz indices and names
+
+
 ```
 
-## Plot raw signal
-This section shows a plot of the raw signal.
-```{r plot raw signal,out.width="100%"}
-data("pt01Epochm3sp5s")
-soznames<-attr(pt01Epochm3sp5s,"soznames")
-display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
-time_window=c(-3,5)
-title="PT01sz1"
-iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,title=title,display=display)
-iEEGplot
-```
 
 ## Compute Fragility Matrix
-Do not run if you are not ready to wait for >10 minutes. This is currently the non-optimized sequential version of the main function.
+Do not run if you are not ready to wait for >10 minutes. This is the non-optimized sequential version.
 ```{r compute fragility, eval=FALSE}
 t_window <- 250
 t_step <- 125
@@ -61,14 +50,14 @@ lambda <- NULL
 nSearch=100
 resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 # Fragility matrix result
-fragm3sp5s<-resfrag[[3]]
+head(resfrag$frag, n=3)
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01
 
-Plot fragility heatmap for all electrodes with electrodes marked as soz colored in the top.
+Plot fragility heatmaps with electrodes marked as soz colored in the bottom
 The result running the previous section is saved in the data package and loaded here.
-```{r plot fragility heatmap for all electrodes,out.width="100%"}
+```{r plot fragility heatmap,out.width="100%"}
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 time_window=c(-3,5)
@@ -79,9 +68,8 @@ fragplot
 
 
 ## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
-Plot fragility heatmap for some electrodes (soz plus a few non soz) with electrodes marked as soz colored in the top.
 This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
-```{r  plot fragility heatmap for ,out.width="100%"}
+```{r}
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 time_window=c(-3,5)
@@ -91,39 +79,39 @@ fragplot
 ```
 
 ## Compute electrodes statistics of fragility map 
-
-Compute mean and standard deviation for two electrodes group marked as soz non marked as soz
+Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-time_window_ictal=c(-3,5)
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstatcurve<-frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 ```
 
 ## Plot Fragility distribution
-Plot fragility distribution for two electrodes group marked as soz non marked as soz.
-```{r visualize_frag_distribution,out.width="100%", eval=TRUE}
-time_window_ictal=c(-3,5)
+Plot fragility distribution for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_distribution,out.width="100%"}
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstatcurve<-frag_stat(frag=fragm3sp5s,elecsoz=sozindex)
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 # plot the statistical results
-pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
+pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 pfragstat
 ```
 
 ## Plot fragility quantile
-Plot Fragility quantiles for two electrodes group marked as soz non marked as soz.
-```{r visualize_frag_auantile,out.width="100%"}
-time_window_ictal=c(-3,5)
+Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_quantile,out.width="100%"}
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-qmatsozsozc<-frag_quantile(frag=fragm3sp5s, elecsoz=sozindex)
-plot_frag_quantile( qmatsozsozc=qmatsozsozc, time_window_ictal=time_window_ictal)
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+qfragplot<-plot_frag_quantile(stat=fragstat, time_window=time_window)
+qfragplot
 ```
