@@ -4,24 +4,25 @@ isWholeNumber <- function(x) {
 
 #' validate seizure onset data
 #'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t), 
+#' @param ieeg_ts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
 #' @param sozindex Integer. Vector soz electrodes 
 #' @param soznames Vector string. soz electrodes names 
 #'
 #' @return boolean
+#' @export
 #'
 #' @examples
 #' data("pt01Epochm3sp5s")
 #'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
 #'soznames<-attr(pt01Epochm3sp5s,"soznames")
-#'valid<-valid_soz(ieegts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
+#'valid<-valid_soz(ieeg_ts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
 #'
-valid_soz <- function( ieegts, sozindex, soznames){
+valid_soz <- function( ieeg_ts, sozindex, soznames){
   
   valid<-TRUE
-  elecnames<-colnames(ieegts)
-  elecind=c(1:ncol(ieegts))
+  elecnames<-colnames(ieeg_ts)
+  elecind=c(1:ncol(ieeg_ts))
   
   diffelecind<-setdiff(sozindex,elecind)
   

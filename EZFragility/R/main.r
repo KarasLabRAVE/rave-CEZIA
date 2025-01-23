@@ -10,7 +10,7 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description 
 #' 
-#' @param ieegts Numeric. A matrix of iEEG time series x(t), 
+#' @param ieeg_ts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
 #' @param t_window Integer. The number of time points to use in each window
 #' @param t_step Integer. The number of time points to move the window each time
@@ -19,7 +19,7 @@
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
 #' 
-#' @return A list containing the normalized ieegts, 
+#' @return A list containing the normalized ieeg_ts, 
 #' adjacency matrices, fragility, and R^2 values
 #' 
 #' @examples
@@ -28,7 +28,7 @@
 #' t_window <- 10
 #' t_step <- 5
 #' lambda <- 0.1
-#' calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
+#' calc_adj_frag(ieeg_ts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
@@ -38,7 +38,7 @@
 #' lambda <- NULL
 #' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+#' resfrag<-calc_adj_frag(ieeg_ts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda,n_search=nSearch)
 #' }
 #' 
 #' 
@@ -54,27 +54,27 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
+calc_adj_frag <- function(ieeg_ts, t_window, t_step, lambda = NULL, n_search) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
     ## The input matrix must have at least t_window rows
-    stopifnot(nrow(ieegts) >= t_window)
+    stopifnot(nrow(ieeg_ts) >= t_window)
 
 
     ## Number of electrodes and time points
-    n_tps <- nrow(ieegts)
-    n_elec <- ncol(ieegts)
+    n_tps <- nrow(ieeg_ts)
+    n_elec <- ncol(ieeg_ts)
 
-    electrode_list <- colnames(ieegts)
+    electrode_list <- colnames(ieeg_ts)
 
     # Number of steps
     n_steps <- floor((n_tps - t_window) / t_step) + 1
 
-    scaling <- 10^floor(log10(max(ieegts)))
-    ieegts <- ieegts / scaling
+    scaling <- 10^floor(log10(max(ieeg_ts)))
+    ieeg_ts <- ieeg_ts / scaling
 
     ## create adjacency array (array of adj matrices for each time window)
     ## iw: The index of the window we are going to calculate fragility
@@ -82,9 +82,9 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
         ## Sample indices for the selected window
         si <- seq_len(t_window - 1) + (iw - 1) * t_step
         ## measurements at time point t
-        xt <- ieegts[si, ]
+        xt <- ieeg_ts[si, ]
         ## measurements at time point t plus 1
-        xtp1 <- ieegts[si + 1, ]
+        xtp1 <- ieeg_ts[si + 1, ]
 
         ## Coefficient matrix A (adjacency matrix)
         ## each column is coefficients from a linear regression
@@ -146,7 +146,7 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
     f_rank <- f_rank / max(f_rank)
 
     Fragility(
-        ieegts = ieegts,
+        ieeg_ts = ieeg_ts,
         adj = A,
         frag = f,
         frag_ranked = f_rank,

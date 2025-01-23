@@ -1,7 +1,7 @@
 Fragility <- setClass(
     "Fragility",
     slots = list(
-        ieegts = "matrixOrNULL",
+        ieeg_ts = "matrixOrNULL",
         adj = "arrayOrNULL",
         frag = "matrixOrNULL",
         frag_ranked = "matrixOrNULL",

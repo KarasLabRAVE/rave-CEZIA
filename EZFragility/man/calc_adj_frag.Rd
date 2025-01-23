@@ -12,10 +12,10 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch)
+calc_adj_frag(ieeg_ts, t_window, t_step, lambda = NULL, n_search)
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+\item{ieeg_ts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
 \item{t_window}{Integer. The number of time points to use in each window}
@@ -29,7 +29,7 @@ ensuring that ensuring that the adjacent matrix is stable (see details)}
 \item{nSearch}{Integer. Number of minimization to compute the fragility row}
 }
 \value{
-A list containing the normalized ieegts,
+A list containing the normalized ieeg_ts,
 adjacency matrices, fragility, and R^2 values
 }
 \description{
@@ -53,7 +53,7 @@ data <- matrix(rnorm(100), nrow = 10)
 t_window <- 10
 t_step <- 5
 lambda <- 0.1
-calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
+calc_adj_frag(ieeg_ts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 
 ## A more realistic example, but it will take a while to run
 \dontrun{
@@ -63,7 +63,7 @@ t_step <- 125
 lambda <- NULL
 nSearch <- 100
 title <- "PT01 seizure 1"
-resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+resfrag<-calc_adj_frag(ieeg_ts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda,n_search=nSearch)
 }
 
 
