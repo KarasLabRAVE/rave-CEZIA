@@ -11,31 +11,34 @@
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #'
 #' @examples
-#' # use integer index for display and soz electrodes
-#'data("fragm3sp5s")
-#'sozindex<-attr(fragm3sp5s,"sozindex")
-#'time_window <- c(-3,5)
+# use integer index for display and soz electrodes
+#'data("pt01Epoch")
+#'sozindex<-attr(pt01Epoch,"sozindex")
+#'data("pt01Frag")
+#'time_window <- c(-10,10)
 #'display <- c(sozindex,77:80)
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
+#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # use electrodes name for display and soz electrodes
-#'data("fragm3sp5s")
-#'soznames<-attr(fragm3sp5s,"soznames")
-#'time_window <- c(-3,5)
+#'data("pt01Epoch")
+#'soznames<-attr(pt01Epoch,"soznames")
+#'data("pt01Frag")
+#'time_window <- c(-10,10)
 #'display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=soznames,time_window <- time_window,title="PT01 seizure 1",display=display)
+#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=soznames,time_window <- time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
-#'data("fragm3sp5s")
-#'sozindex<-attr(fragm3sp5s,"sozindex")
-#'time_window <- c(-3,5)
+#'data("pt01Epoch")
+#'data("pt01Frag")
+#'sozindex<-attr(pt01Epoch,"sozindex")
+#'time_window <- c(-10,10)
 #'display <- c(sozindex,77:80)
 #'pathplot <- "~"
 #'title <- "PT01sz1"
 #'resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title=title,display=display)
+#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window=time_window,title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
 #' 
@@ -45,7 +48,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
   
   
   if(is.null(display)){
-    display<-1:nrow(frag)
+    display<-1:nrow(frag$frag)
   }
   
   if (is(frag, "Fragility")) {
@@ -192,8 +195,10 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 #' @return plot raw signal
 #'
 #' @examples
-#'data("pt01Epochm3sp5s")
-#'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
+#'data("pt01Epoch")
+#'sozindex <- attr(pt01Epoch,"sozindex")
+#'## We will use data from -3s to 5s around the seizure onset
+#'pt01Epochm3sp5s<-pt01Epoch[7001:15000,]
 #'display <- c(sozindex,77:80)
 #'time_window <- c(-3,5)
 #'iEEGplot<-visu_iEEG_data(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
@@ -294,19 +299,19 @@ visu_iEEG_data<-function(ieegts, time_window=NULL, title = "Patient name seizure
 #' @export
 #'
 #' @examples
-#' time_window <- c(-3,5)
-#'data("fragm3sp5s")
-#'sozindex<-attr(fragm3sp5s,"sozindex")
+#'time_window <- c(-10,10)
+#'data("pt01Epoch")
+#'sozindex<-attr(pt01Epoch,"sozindex")
+#'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-#'qfragplot<-plot_frag_quantile(stat=fragstat, time_window=time_window)
-#'qfragplot
-plot_frag_quantile<-function(stat, time_window = NULL,title="Fragility Quantiles over time"){
-  
-  if(!is.null(stat)){
-    qmatrix<-stat$qmatrix
+#'fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
+#'plot_frag_quantile(qmatrix=fragstat, time_window=time_window)
+plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quantiles over time"){
+  if(is(qmatrix, "FragStat")){
+    qmatrix <- qmatrix$qmatrix
   }
+  
   nw <- ncol(qmatrix)
   if(is.null(time_window)){
     xlabel<-"Time Index"
@@ -357,12 +362,14 @@ plot_frag_quantile<-function(stat, time_window = NULL,title="Fragility Quantiles
 #' @export
 #'
 #' @examples
-#'time_window <- c(-3,5)
-#'data("fragm3sp5s")
-#'sozindex<-attr(fragm3sp5s,"sozindex")
+#'data("pt01Epoch")
+#'sozindex<-attr(pt01Epoch,"sozindex")
+#'# Load the precomputed fragility object
+#'time_window <- c(-10,10)
+#'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+#'fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
 #'# plot the statistical results
 #'pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 #'pfragstat

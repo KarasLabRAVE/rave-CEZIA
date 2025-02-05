@@ -17,8 +17,6 @@ soznames<-channelNames$name[sozChannels]
 ## Add time stamps to the columns
 times <- seq(-10, 10, length.out=ncol(pt01Epoch))
 times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
-# why this?
-#colnames(ptEpoch) <- paste0('t', times_with_sign)
 colnames(pt01Epoch)<-times_with_sign
 
 pt01Epoch <- t(pt01Epoch)
@@ -27,3 +25,10 @@ attr(pt01Epoch, "soznames") <- soznames
 usethis::use_data(pt01Epoch, overwrite = TRUE)
 
 
+## load fragility matrix
+t_window <- 250
+t_step <- 125
+lambda <- NULL
+nSearch <- 10
+pt01Fragm1sp2s <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+usethis::use_data(pt01Fragm1sp2s, overwrite = TRUE)
