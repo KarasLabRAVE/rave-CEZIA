@@ -1,4 +1,7 @@
-#write montage RAVE format using electrodes localization
+# updated 011725
+# Anne-Cecile Lesage
+# UTMB
+# write montage in RAVE format using electrodes localization
 
 library(tcltk)
 
