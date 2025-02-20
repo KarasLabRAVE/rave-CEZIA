@@ -28,7 +28,7 @@ cat(
 
 ## Introduction
 
-The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method is a iEEG marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
+The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method is a intracanial EEG (iEEG) marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
 
 ## EZFragility package tutorial
 
@@ -60,12 +60,29 @@ The method to compute the row perturbation is also not clear
 
 ## TODO:
 
-- Exported function names and parameters to snake case(e.g. nSearch -> n_search)
-- Unit test
+- Unit test (`test-main.R` from cecile)
 - Vignette
-- Check examples in the function documentation to make sure they are working
 - Make sure all required functions/class have been exported
-- Clear all error and warning in `devtools::check()` and `R CMD check --as-cran`
+- Clear all error and warning in `devtools::check()` and
+  `R CMD check --as-cran`
+
+Data:
+
+- The data is too large. We need to find a way to reduce it.
+    - Do we really need to recreate the result in the paper? For users, they just need to know how to use the package. If they want, they can download the data from the paper.
+
+Ioannis:
+
+- Branch1: Simplify Cecile's `frag_stat` function in another branch (one or two branches depending on the amount of work) (Reviewer: Cecile)
+- Branch2: Add hidden parameters to the Fragility class and (Reviewer: Jiefei)
+
+Cecile:
+
+- Branch3: Fix warning in `heatmap_frag` from ggplot2 and wording issue. (respect cammelCase `listelecmissing` -> `listElecMissing`) (Reviewer: Jiefei)
+- After Branch2: Use the hidden parameters in the Fragility class in visualization
+- Make the epoch data within -1 to 2s
+- why we call the data PT01? This number does not make any sense to users. Will we have PT02?
+- What is example 3?
 
 
 ## References

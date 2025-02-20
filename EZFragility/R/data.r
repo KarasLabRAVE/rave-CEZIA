@@ -19,6 +19,7 @@
 #' 
 #' pt01Frag: A fragility object result of example 3 for 
 #' calc_adj_frag function help with and 84 columns (electrodes)
+#'  \[-1:2\]s around the seizure onset
 #'
 #' @keywords datasets
 #'
