@@ -40,29 +40,58 @@ bipolar_ref$type <- NULL
 bipolar_ref$Label <- as.numeric(gsub("[^0-9]", "", bipolar_ref$name))
 # Max contact number by group
 ngroup=length(groupnames)
-for (i in 2:ngroup) {
-
+# bipolar referencing in same grid or electrode shaff
+for (i in 1:ngroup) {
   namegroup<-groupnames[i]
-  if(namegroup=='G'){
+  groupid<-which(bipolar_ref$Group==namegroup)
+  labelgroup<-bipolar_ref$Label[groupid]
+  elecgroup<-bipolar_ref$Electrode[groupid]
+  maxcontact=length(groupid)
+  
+ if(namegroup=='G'){
+    for (j in 1:maxcontact) {
+      if(as.numeric(bipolar_ref$Label[groupid[j]])%%8==0){
+        bipolar_ref$Reference[groupid[j]]<-"noref"
+        
+      }else{
+        labelj=as.numeric(bipolar_ref$Label[groupid[j]])
+        knext<-maxcontact
+        compmin<-maxcontact*-1
+        for (k in 1:maxcontact) {
+          
+          if(k!=j){
+            
+            comp<-as.numeric(bipolar_ref$Label[groupid[j]])-as.numeric(bipolar_ref$Label[groupid[k]])
+            if(comp<0){
+              if(comp>compmin){
+                compmin<-comp
+                knext<-k
+              }
+            }
+              
+          }
+                
+        }
+        bipolar_ref$Reference[groupid[j]]<-paste("ref_",elecgroup[knext],sep="")
+        
+      }
+    }
+ 
     
   }else{
     groupid<-which(bipolar_ref$Group==namegroup)
     maxcontact=length(groupid)
     je=maxcontact-1
     for (j in 1:je) {
-      #j=3
-      if(bipolar_ref$Label[groupid[j]]!=maxcontact){
         jp=bipolar_ref$Label[groupid[j]]+1
         nextc<-paste(namegroup,jp,sep="")
         id<-which(bipolar_ref$name==nextc)
         bipolar_ref$Reference[groupid[j]]<-paste("ref_",bipolar_ref$Electrode[id],sep="")
-      }
-    }  
+    }
     bipolar_ref$Reference[groupid[j+1]]<-"noref"
   }
-}  
   
-#}  
+}  
 
 
 
