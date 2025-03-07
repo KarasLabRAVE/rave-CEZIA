@@ -75,40 +75,6 @@ fragilityRow in the scrip fragility.r), however the paper does not
 describe how to choose $\lambda$ with $|\lambda|=1$. To tackle this
 issue, we search for the value that minimize the norm of $\Delta$.
 
-## TODO:
-
-- Unit test (`test-main.R` from cecile)
-- Vignette
-- Make sure all required functions/class have been exported
-- Clear all error and warning in `devtools::check()` and
-  `R CMD check --as-cran`
-
-Data:
-
-- The data is too large. We need to find a way to reduce it.
-  - Do we really need to recreate the result in the paper? For users,
-    they just need to know how to use the package. If they want, they
-    can download the data from the paper. Done
-
-Ioannis:
-
-- Branch1: Simplify Cecile’s `frag_stat` function in another branch (one
-  or two branches depending on the amount of work) (Reviewer: Cecile)
-- Branch2: Add hidden parameters to the Fragility class and (Reviewer:
-  Jiefei)
-
-Cecile:
-
-- Branch3: Fix warning in `heatmap_frag` from ggplot2 and wording issue.
-  (respect cammelCase `listelecmissing` -\> `listElecMissing`)
-  (Reviewer: Jiefei)
-- After Branch2: Use the hidden parameters in the Fragility class in
-  visualization
-- Make the epoch data within -1 to 2s
-- why we call the data PT01? This number does not make any sense to
-  users. Will we have PT02?
-- What is example 3?
-
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent"
