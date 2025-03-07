@@ -23,9 +23,9 @@ It calculates the neural fragility heatmap based on intracranial electrocorticog
 The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
 <a href="https://ieeexplore.ieee.org/document/7963378" style="color:blue; text-decoration:none;"> Fragility Method</a>
 
-## Load small ictal ieeg data for patient PT01
+## Load ictal ieeg data for patient PT01
 
-This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -1:2s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 300 rows (time points) and 84 columns (electrodes). The columns names are the electrodes names. The row names is the time relative to seizure onset in (s)
+This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -10:10s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 20001 rows (time points) and 84 columns (electrodes). The columns names are the electrodes names. The row names is the time relative to seizure onset in (s)
 
 
 ```{r ictal data}
@@ -37,8 +37,9 @@ sozNames <- attr(pt01Epochm1sp2s,"sozZames")
 
 ## Visualize ictal data
 display <- c(sozIndex,77:80)
-timeRange <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
+data("pt01Epoch")
+timeRange <- c(-10,10)
+iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
 iEEGplot
 ```
 
@@ -56,23 +57,23 @@ pt01Fragm1sp2s$frag[1:5, 1:5]
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
-This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time window around seizure onset [-1:2]s
+This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time window around seizure onset [-10:10]s
 - `sozindex` contains the index of the soz electrodes
 - `77:80` are the index of the non soz electrodes
 ```{r}
-data("pt01Epochm1sp2s")
+data("pt01Epoch")
 sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-data("pt01Fragm1sp2s")
-timeRange <- c(-1,2)
+data("pt01Frag")
+timeRange <- c(-10,10)
 display <- c(sozIndex,77:80)
-fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,timeRange = timeRange,title="PT01 seizure 1",display=display)
+fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange = timeRange,title="PT01 seizure 1",display=display)
 fragplot
 ```
 
 ## Compute electrodes statistics of fragility map 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
+fragstat <- fragStat(frag=pt01Frag, sozID=sozIndex)
 fragstat
 ```
 
