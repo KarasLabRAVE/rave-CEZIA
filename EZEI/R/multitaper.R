@@ -78,7 +78,7 @@ multitaper_spectrogram_R <- function(data, fs, frequency_range=NULL, time_bandwi
   tic <- proc.time() # start timer for multitaper
 
   # Compute DPSS tapers (STEP 1)
-  dpss_tapers <- dpss(winsize_samples, num_tapers, time_bandwidth, returnEigenvalues=TRUE)
+  dpss_tapers <- multitaper::dpss(winsize_samples, num_tapers, time_bandwidth, returnEigenvalues=TRUE)
   dpss_eigen = dpss_tapers$eigen
   dpss_tapers = dpss_tapers$v
 

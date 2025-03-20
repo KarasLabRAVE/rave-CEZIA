@@ -34,4 +34,20 @@ calcEI<- function(ieegts){
   lambda=15
 
 
+  dimieeg=dim(ieegts)
+  nt=dimieeg[1]
+  nElec=dimieeg[2]
+
+  fs=1000
+
+  nwt=floor((nt/fs-window_params[1])/window_params[2])+1
+
+  data   <- vector(mode="numeric", length=nt)
+  data[1:nt]<-ieegts[1:nt,1]
+  # Compute the multitaper spectrogram
+  results = multitaper_spectrogram_R(data, fs, frequency_range, time_bandwidth, num_tapers, window_params, min_nfft, weighting, detrend_opt, parallel, num_workers,
+                                     plot_on, verbose, xyflip)
+
+
+
 }
