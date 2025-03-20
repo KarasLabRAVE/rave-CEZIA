@@ -12,8 +12,7 @@ Authors@R:
     comment = c(ORCID = "0000-0002-9528-4899"))
     )
 Maintainer: The package maintainer <aclesage@gmail.com>
-Description: Compute signal energy ratio between
-high (beta, gamma) and low (theta, alpha) frequency bands and the Epileptogenic Index for ictal iEEG time series
+Description: Compute signal energy ratio between high (beta, gamma) and low (theta, alpha) frequency bands and the Epileptogenic Index for ictal iEEG time series
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -23,13 +22,19 @@ Depends:
 LazyData: true
 Imports: 
     stats,
-    methods, 
+    methods,
     ggplot2 (>= 3.4.0),
     viridis,
     ggtext,
     glue,
     glmnet,
-    rlang
+    rlang,
+    multitaper,
+    pracma,
+    fields,
+    doParallel,
+    parallel,
+    signal
 Suggests: 
     knitr,
     rmarkdown,
