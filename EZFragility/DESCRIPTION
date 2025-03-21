@@ -53,11 +53,15 @@ Imports:
     viridis,
     ggtext,
     glue,
-    glmnet,
-    rlang
+    rlang,
+    foreach,
+    progress,
+    ramify,
+    reshape2 
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    doSNOW
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -25,9 +25,23 @@ reproduce the neural fragility method and adjust the parameters. This
 Rpackage aims to identify and fill up the implementation details. It
 will also allow users to test the method parameters on their data.
 
+## Installation
+
+To install the package from GitHub
+
+``` r
+devtools::install_github("Jiefei-Wang/EZFragility")
+```
+
 ## EZFragility package tutorial
 
 To load the package
+
+``` r
+library(EZFragility)
+```
+
+If you are working with the source code, you can load the package with
 
 ``` r
 devtools::load_all()
@@ -36,44 +50,46 @@ devtools::load_all()
 The package contains an example data. To see it, type
 
 ``` r
-pt01Epochm1sp2s
+pt01EcoG
 ```
 
 The package contains an example results. To see it, type
 
 ``` r
-pt01Fragm1sp2s
+pt01Frag
 ```
 
-For your test code, please consider creating a folder scripts and put
-your code there. This folder will be ignored by git. For explanations on
-how to use the package please refer to the vignette
-Intro_to_EZFragility.
+For explanations on how to use the package please refer to the vignette.
+
+``` r
+vignette("Intro_to_EZFragility", package = "EZFragility")
+```
 
 ## Implementation details
 
 The method is based on building a discrete time linear system computing
 a stable adjacency matrix A for the evolution of x(t).  
-$x(t+1)=A x(t)$ with $x_i(t)$ the iEEG signal at time $t$ for electrode
-$i$. A is computed for a series of time windows to derive the fragility
-row.  
-In this package, we are applying a ridge regression to fit the linear
-operator A using the glmnet R library. In (Li et al. 2017, 2021), a
-regularization parameter value of 1e-4 is recommended, however testing
-on the data from patient pt01 from the Fragility data set (data subset
-available in this package) this value does not ensure that A is always
-stable. To tackle this issue, we have implemented a dichotomy to search
-for the lowest stable lambda value rendering the matrix A stable (see R
-function ridgesearchlambdadichomotomy in file ridge.r).
+$`x(t+1)=A x(t)`$ with $`x_i(t)`$ the iEEG signal at time $`t`$ for
+electrode $`i`$. A is computed for a series of time windows to derive
+the fragility row.  
+In this package, we are applying a ridge regression to solve the matrix
+A. In (Li et al. 2017, 2021), a regularization parameter value of 1e-4
+is recommended, however testing on the data from patient pt01 from the
+Fragility data set (data subset available in this package) this value
+does not ensure that A is always stable. To tackle this issue, we have
+implemented a dichotomy to search for the lowest stable lambda value
+rendering the matrix A stable (see R function ridgeSearch in file
+ridge.r).
 
 The method to compute the row perturbation is also not clear. To compute
 the fragility row, a minimum 2-induced norm additive row perturbation
-$\Delta$ is computed to destabilize the linear network placing an
-eigenvalue of $A+\Delta$ at $\lambda=\sigma+j\omega$. The minimum norm
-is a function of $\lambda$ given in (Li et al. 2017) (see function
-fragilityRow in the scrip fragility.r), however the paper does not
-describe how to choose $\lambda$ with $|\lambda|=1$. To tackle this
-issue, we search for the value that minimize the norm of $\Delta$.
+$`\Delta`$ is computed to destabilize the linear network placing an
+eigenvalue of $`A+\Delta`$ at $`\lambda=\sigma+j\omega`$. The minimum
+norm is a function of $`\lambda`$ given in (Li et al. 2017) (see
+function fragilityRow in the scrip fragility.r), however the paper does
+not describe how to choose $`\lambda`$ with $`|\lambda|=1`$. To tackle
+this issue, we search for the value that minimize the norm of
+$`\Delta`$.
 
 ## References
 

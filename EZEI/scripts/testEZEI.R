@@ -53,3 +53,5 @@ data[1:nt]<-ieegts[1:nt,1]
 # Compute the multitaper spectrogram
 results = multitaper_spectrogram_R(data, fs, frequency_range, time_bandwidth, num_tapers, window_params, min_nfft, weighting, detrend_opt, parallel, num_workers,
                                    plot_on, verbose, xyflip)
+
+

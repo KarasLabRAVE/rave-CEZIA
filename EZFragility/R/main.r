@@ -11,149 +11,253 @@
 #' We have found solutions to fill up missing details in the paper method description
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
-#' with time points as rows and electrodes names as columns
+#' with electrodes names as rows and time points as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression.
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param nSearch Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
+#' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
+#' @param parallel Logical. If TRUE, use parallel computing.
+#' Users must register a parallel backend with the foreach package
 #'
-#' @return A list containing the normalized ieegts,
-#' adjacency matrices, fragility, and R^2 values
+#'
+#' @return A Fragility object
 #'
 #' @examples
-#' ## A simple example
-#' data <- matrix(rnorm(100), nrow = 10)
-#' window <- 10
+#' ## A dummy example with 5 electrodes and 20 time points
+#' data <- matrix(rnorm(100), nrow = 5)
+#' ## create an Epoch object
+#' epoch <- Epoch(data)
+#' windowNum <- 10
 #' step <- 5
 #' lambda <- 0.1
-#' calcAdjFrag(ieegts = data, window = window,
-#' step = step, lambda = lambda)
+#' calcAdjFrag(
+#'     epoch = epoch, window = windowNum,
+#'     step = step, lambda = lambda, progress = TRUE
+#' )
 #'
-#' ## A more realistic example, but it will take a while to run
+#' ## A more realistic example with parallel computing
 #' \dontrun{
-#' data("pt01Epochm1sp2s")
+#' ## Register a SNOW backend with 4 workers
+#' library(parallel)
+#' library(doSNOW)
+#' cl <- makeCluster(4, type = "SOCK")
+#' registerDoSNOW(cl)
+#'
+#' data("pt01EcoG")
+#' epoch <- Epoch(pt01EcoG)
 #' window <- 250
 #' step <- 125
-#' lambda <- NULL
-#' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-#'   step = step, lambda = lambda,nSearch=nSearch)
-#' }
+#' calcAdjFrag(
+#'     epoch = epoch, window = window,
+#'     step = step, parallel = TRUE, progress = TRUE
+#' )
 #'
+#' ## stop the parallel backend
+#' stopCluster(cl)
+#' }
 #'
 #' @details
 #' 1/ For each time window i, a discrete stable Linear time system
 #' (adjacency matrix) is computed named \eqn{A_i}
 #' such that
-#' \eqn{A_i x(t) = x(t+1)}
-#' option Lambda=NULL ensures that the matrix is stable
+#' \eqn{A_i x(t) = x(t+1)}. The 'lambda' option is the regularization parameter
+#' for the ridge regression.
+#' `lambda=NULL`(default) will find a lambda value that ensures
+#' the stability of the estimated \eqn{A_i}.
 #'
 #' 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
 #' for column perturbation is computed.
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch=100) {
+calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
     ## check the input types
+    stopifnot(is.matrix(epoch) | is(epoch, "Epoch"))
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
+    stopifnot(step > 0)
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
+
+    if (!is(epoch, "Epoch")) {
+        epoch <- Epoch(epoch)
+    }
+    elecNum <- nrow(epoch)
+    timeNum <- ncol(epoch)
+    elecNames <- epoch$electrodes
+    timePoints <- epoch$times
+    dataMat <- epoch$data
+
     ## The input matrix must have at least window rows
-    stopifnot(nrow(ieegts) >= window)
+    stopifnot(timeNum >= window)
 
+    dataMat <- standardizeIEEG(dataMat)
+    # Number/sequence of steps
+    nWindows <- floor((timeNum - window) / step) + 1L
+    windows <- seq_len(nWindows)
+    # Pre-allocate output
 
-    ## Number of electrodes and time points
-    n_tps <- nrow(ieegts)
-    n_elec <- ncol(ieegts)
+    # dimension
+    dm <- c(elecNum, elecNum, nWindows)
+    # dimension names
+    dmn <- list(Electrode = elecNames, Step = windows)
+    # dimension names for adjacency matrix
+    dmnA <- list(Electrode1 = elecNames, Electrode2 = elecNames, Step = windows)
 
-    electrodeList <- colnames(ieegts)
+    # Pre-allocate output
+    A <- array(.0, dim = dm, dimnames = dmnA)
+    R2 <- array(.0, dim = dm[-1], dimnames = dmn)
+    f <- fR <- R2
+    lbd <- rep(0, nWindows) |> setNames(windows)
 
-    # Number of steps
-    nSteps <- floor((n_tps - window) / step) + 1
-
-    scaling <- 10^floor(log10(max(ieegts)))
-    ieegts <- ieegts / scaling
-
-    ## create adjacency array (array of adj matrices for each time window)
-    ## iw: The index of the window we are going to calculate fragility
-    res <- lapply(seq_len(nSteps), function(iw) {
-        ## Sample indices for the selected window
-        si <- seq_len(window - 1) + (iw - 1) * step
-        ## measurements at time point t
-        xt <- ieegts[si, ]
-        ## measurements at time point t plus 1
-        xtp1 <- ieegts[si + 1, ]
-
-        ## Coefficient matrix A (adjacency matrix)
-        ## each column is coefficients from a linear regression
-        ## formula: xtp1 = xt*A + E
-        if (is.null(lambda)) {
-            Ai <- ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
-        } else {
-            Ai <- ridge(xt, xtp1, intercept = FALSE, lambda = lambda)
-        }
-
-        R2 <- ridgeR2(xt, xtp1, Ai)
-
-        list(Ai = Ai, R2 = R2)
-    })
-
-    A <- unlist(lapply(res, function(w) {
-        w$Ai
-    }))
-    ## TODO: Why do you want to do this? very error prone
-    dim(A) <- c(n_elec, n_elec, nSteps)
-    dimnames(A) <- list(
-        Electrode1 = electrodeList,
-        Electrode2 = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    R2 <- unlist(lapply(res, function(w) {
-        w$R2
-    }))
-    dim(R2) <- c(n_elec, nSteps)
-    dimnames(R2) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    if (is.null(lambda)){
-        lambdas <- sapply(res, function(w) {
-            attr(w$Ai, "lambdaopt")
-        })
+    ## switch between parallel and sequential computing
+    if (parallel) {
+        `%run%` <- foreach::`%dopar%`
     } else {
-        lambdas <- rep(lambda, length(res))
+        `%run%` <- foreach::`%do%`
     }
 
+    ## initialize the progress bar
+    if (progress) {
+        pb <- progress_bar$new(
+            format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
+            total = nWindows,
+            width = 60
+        )
 
+        progress <- function(n) {
+            pb$tick()
+        }
+        opts <- list(progress = progress)
+        on.exit(pb$terminate())
+    } else {
+        opts <- list()
 
-    # calculate fragility
-    f <- sapply(seq_len(nSteps), function(iw) {
-        fragilityRow(A[, , iw],nSearch=nSearch) # Normalized minimum norm perturbation for Gammai (time window iw)
-    })
-    dimnames(f) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
+        progress <- function(n) {
+            NULL
+        }
+    }
 
-    ## TODO: Is this consistent with the method in the paper?
-    # ranked fragility map
-    f_rank <- matrix(rank(f), nrow(f), ncol(f))
-    attributes(f_rank) <- attributes(f)
-    f_rank <- f_rank / max(f_rank)
+    ## Initial data for data aggregation
+    init <- list(A = A, R2 = R2, f = f, lbd = lbd)
+    foreach(
+        iw = windows,
+        .combine = .combine,
+        .init = init,
+        .inorder = FALSE,
+        .options.snow = opts
+    ) %run% {
+        progress(iw)
+        ## Those are necessary to clear R check issue
+        iw <- get("iw")
+        .ridgeSearch <- getFromNamespace("ridgeSearch", "EZFragility")
+        .ridgeR2 <- getFromNamespace("ridgeR2", "EZFragility")
+        .fragilityRow <- getFromNamespace("fragilityRow", "EZFragility")
 
+        ## slice indices
+        si <- (iw - 1L) * step + seq_len(window - 1L)
+        xt <- dataMat[, si, drop = FALSE]
+        xtp1 <- dataMat[, si + 1L, drop = FALSE]
+
+        adjMatrix <- .ridgeSearch(xt, xtp1, lambda)
+        R2Column <- .ridgeR2(xt, xtp1, adjMatrix)
+        fColumn <- .fragilityRow(adjMatrix, nSearch)
+
+        list(
+            iw = iw,
+            adjMatrix = adjMatrix,
+            R2Column = R2Column,
+            fColumn = fColumn
+        )
+    } -> results
+
+    ## unpack the results
+    A <- results$A
+    R2 <- results$R2
+    f <- results$f
+    lbd <- results$lbd
+
+    ## column rank of fragility matrix
+    fR <- apply(f, 2, rank) / elecNum
+
+    ## start time point/indices for each partition
+    startTimes <- (seq_len(nWindows) - 1L) * step + 1L
+    if (!is.null(epoch$times)) {
+        startTimes <- epoch$times[startTimes]
+    }
+
+    ## TODO: why the row of frag is the electrode names? not the column of frag?
+    ## This does not match the input data
     Fragility(
-        ieegts = ieegts,
+        ieegts = dataMat,
         adj = A,
-        frag = f,
-        frag_ranked = f_rank,
         R2 = R2,
-        lambdas = lambdas
+        frag = f,
+        frag_ranked = fR,
+        lambdas = lbd,
+        startTimes = startTimes,
+        electrodes = epoch$electrodes
     )
+}
 
+.combine <- function(results, x) {
+    iw <- x$iw
+    adjMatrix <- x$adjMatrix
+    R2Column <- x$R2Column
+    fColumn <- x$fColumn
+
+    results$A[, , iw] <- adjMatrix
+    results$R2[, iw] <- R2Column
+    results$f[, iw] <- fColumn
+    results$lbd[[iw]] <- attr(adjMatrix, "lambda")
+    results
+}
+
+#' Find Serzure Onset Zone
+#' 
+#' The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
+#'
+#' @param x Fragility object
+#' @param method Character. The method to use to find the onset zone.
+#' Must be one of 'max', 'min', or "mean"
+#' @param proportion Numeric. The proportion of electrodes to consider as the onset zone.
+#' The electrode number will be rounded to the nearest integer.
+#' @param ... Additional arguments
+#'
+#' @return A vector of electrode names, or indices if the electrode names are NULL
+#' @export
+estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...) {
+    method <- match.arg(method)
+
+    stopifnot(is(x, "Fragility"))
+
+    fragMat <- x$frag
+    elCnt <- nrow(fragMat)
+    nSOZ <- ceiling(elCnt * proportion)
+    stopifnot(nSOZ > 0 & nSOZ <= elCnt)
+
+    if (method == "max") {
+        stat <- apply(fragMat, 1, max)
+    } else if (method == "min") {
+        stat <- apply(fragMat, 1, min)
+    } else if (method == "mean") {
+        stat <- apply(fragMat, 1, mean)
+    }
+
+    sozIndex <- order(stat, decreasing = TRUE)[seq_len(nSOZ)]
+    if (!is.null(x$electrodes)) {
+        sozIndex <- x$electrodes[sozIndex]
+    }
+
+    sozIndex
+}
+
+
+standardizeIEEG <- function(data) {
+    scaling <- 10^floor(log10(max(data)))
+    plotData <- data / scaling
 }

@@ -1,55 +1,53 @@
 isWholeNumber <- function(x) {
-  return(x %% 1 == 0)
+    return(x %% 1 == 0)
 }
 
-#' validate seizure onset data
-#'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t), 
-#' with time points as rows and electrodes names as columns
-#' @param sozindex Integer. Vector soz electrodes 
-#' @param soznames Vector string. soz electrodes names 
-#'
-#' @return boolean
-#'
-#' @examples
-#' \dontrun{
-#' data("pt01Epochm1sp2s")
-#' sozindex<-attr(pt01Epochm1sp2s,"sozindex")
-#' soznames<-attr(pt01Epochm1sp2s,"soznames")
-#' valid<-valid_soz(ieegts=pt01Epochm1sp2s,sozindex=sozindex,soznames=soznames)
-#' }
-valid_soz <- function( ieegts, sozindex, soznames){
-  
-  valid<-TRUE
-  elecnames<-colnames(ieegts)
-  elecind=c(1:ncol(ieegts))
-  
-  diffelecind<-setdiff(sozindex,elecind)
-  
-  if(length(diffelecind)!=0){
-    listelecmissing<-paste(as.character(diffelecind),collapse=" ")
-    message<-paste("ERROR in soz electrodes names. Numbers ",listelecmissing,"are out of electrode number limit")
-    warning(message)
-    valid<-FALSE
-  }
-  
-  a<-character(0)
-  #soznames<-c("LB1","LB2")
-  diffelecname<-setdiff(soznames,elecnames)
- 
-  if(!identical(diffelecname,a)){
-    listelecmissing<-paste(diffelecname,collapse=" ")
-    message<-paste("ERROR in soz electrodes names.",listelecmissing,"are not in the electrode name set")
-    warning(message)
-    valid<-FALSE
-  }
-  
-  return(valid)
-  
-}
 
 # Shifts to the right all strings of a list with a number of blanks
 shift <- \(strL, nBlanks = 0) {
-  pre <- paste(rep(" ", nBlanks), collapse = "")
-  lapply(strL, \(x) sprintf("%s%s", pre, x)) |> unlist()
+    pre <- paste(rep(" ", nBlanks), collapse = "")
+    lapply(strL, \(x) sprintf("%s%s", pre, x)) |> unlist()
+}
+
+#' Check and keep valid index only
+#'
+#' @param display Numeric or character. Display index
+#' @param elecNames Character. All electrode names
+checkIndex <- function(indices, names) {
+    if (length(names) == 0) {
+        return()
+    }
+    if (length(indices) == 0) {
+        return()
+    }
+    if (is(indices, "numeric")) {
+        allIndices <- seq_along(names)
+        diffIndices <- setdiff(indices, allIndices)
+        indicesFiltered <- indices[!indices %in% diffIndices]
+        result <- indicesFiltered
+    } else {
+        diffIndices <- setdiff(indices, names)
+        indicesFiltered <- indices[!indices %in% diffIndices]
+        result <- which(names %in% indicesFiltered)
+    }
+    if (length(diffIndices)) {
+        indicesMissing <- paste(diffIndices, collapse = ", ")
+        indicesExist <- paste(indicesFiltered, collapse = ", ")
+        warning(
+            glue("Indices {indicesMissing} are out of range. I will keep the valid values {indicesExist}.")
+        )
+    }
+    result
+}
+
+# Try to convert a vector to numeric
+# If not possible, this does not raise a warning or error
+# but returns NULL
+tryToNum <- function(x) {
+    x <- tryCatch(as.numeric(x), error = function(e) x, warning = function(w) x)
+    if (is.numeric(x)) {
+        return(x)
+    } else {
+        return(NULL)
+    }
 }
