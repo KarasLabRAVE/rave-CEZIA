@@ -1,12 +1,34 @@
-## A more realistic example with parallel computing
-## Not run:
-## Register a SNOW backend with 4 workers
-library(parallel)
-library(doSNOW)
+data("pt01Frag")
+data("pt01EcoG")
+sozIndex <- attr(pt01EcoG, "sozIndex")
+pt01fragstat <- fragStat(pt01Frag, sozIndex)
 
+#########################
 
+data("pt01EcoG")
+
+## sozIndex is the index of the electrodes we assume are in the SOZ
+sozIndex <- attr(pt01EcoG, "sozIndex")
+
+## index of the electrodes to display
+display <- c(sozIndex, 77:80)
+
+## precomputed fragility object
+data("pt01Frag")
+
+## plot the fragility heatmap
+plotFragHeatmap(frag = pt01Frag, sozIndex = sozIndex)
+
+## plot the fragility quantiles
+plotFragQuantile(frag = pt01Frag, sozIndex = sozIndex)
+
+## plot the fragility distribution
+plotFragDistribution(frag = pt01Frag, sozIndex = sozIndex)
+
+##############################
 library(R.matlab)
 library(readxl)
+#library(parallel)
 data <- readMat('data-raw/pt01epochdata.mat')
 pt01EpochRaw <- data$a
 
@@ -27,8 +49,8 @@ pt01EcoG<-pt01EpochRaw
 attr(pt01EcoG, "sozIndex") <- sozIndex
 attr(pt01EcoG, "sozNames") <- sozNames
 
-cl <- makeCluster(4, type = "SOCK")
-registerDoSNOW(cl)
+cl <- parallel::makeCluster(4, type = "SOCK")
+doSNOW::registerDoSNOW(cl)
 
 #data("pt01EcoG")
 epoch <- Epoch(pt01EcoG)
@@ -41,12 +63,21 @@ fragtest<-calcAdjFrag(
 )
 
 ## stop the parallel backend
-stopCluster(cl)
+parallel::stopCluster(cl)
 
-sozNames <- attr(pt01EcoG, "sozNames")
+sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = fragtest[display], sozIndex = sozNames)
+plotFragHeatmap(fragtest, sozIndex)
 
-plotFragDistribution(frag = fragtest[display], sozIndex = sozNames)
+plotFragDistribution(fragtest, sozIndex)
 
-plotFragQuantile(frag = fragtest[display], sozIndex = sozNames)
+plotFragQuantile(fragtest, sozIndex)
+
+data("pt01EcoG")
+
+## Visualize a subject of electrodes
+sozIndex <- attr(pt01EcoG, "sozIndex")
+display <- c(sozIndex, 77:80)
+
+epoch <- Epoch(pt01EcoG)
+visuIEEGData(epoch = epoch[display, ])

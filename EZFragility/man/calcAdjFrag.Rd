@@ -23,6 +23,9 @@ calcAdjFrag(
 )
 }
 \arguments{
+\item{epoch}{Numeric. A matrix of iEEG time series x(t),
+with electrodes names as rows and time points as columns, or an Epoch object}
+
 \item{window}{Integer. The number of time points to use in each window}
 
 \item{step}{Integer. The number of time points to move the window each time}
@@ -31,15 +34,12 @@ calcAdjFrag(
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{nSearch}{Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL}
+\item{nSearch}{Integer. Number of unstable eigenvalues with radius 1 to search for the minimum norm perturbation.}
 
 \item{progress}{Logical. If TRUE, print progress information. If \code{parallel} is TRUE, this option only support the \code{doSNOW} backend.}
 
 \item{parallel}{Logical. If TRUE, use parallel computing.
 Users must register a parallel backend with the foreach package}
-
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with electrodes names as rows and time points as columns, or an Epoch object}
 }
 \value{
 A Fragility object

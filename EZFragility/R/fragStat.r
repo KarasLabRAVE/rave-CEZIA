@@ -31,6 +31,9 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
         return(fragNorm)
     }
     maxf <- max(fragNorm)
+    ## TODO: find another way to normalize the fragility row
+    ## The current implementation reverse the meaning of the fragility
+    ## TODO: add both frag and fragNormalized to Fragility
     (maxf - fragNorm) / maxf
 }
 
@@ -38,7 +41,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #'
 #' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}
 
-#' @param sozID Integer.  Vector soz electrodes (for good electrodes)
+#' @param sozIndex Integer.  Vector soz electrodes (for good electrodes)
 #'
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
@@ -46,14 +49,16 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' @examples
 #' data("pt01Frag")
 #' data("pt01EcoG")
-#' sozindex <- attr(pt01EcoG, "sozindex")
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
-fragStat <- function(frag, sozID) {
+#' sozIndex <- attr(pt01EcoG, "sozindex")
+#' pt01fragstat <- fragStat(pt01Frag, sozIndex)
+#' @export 
+fragStat <- function(frag, sozIndex) {
+## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)
     if (is(frag, "Fragility")) frag <- frag$frag
     if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
     steps <- ncol(frag)
-    sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
-    hmapSOZ <- frag[sozID, , drop = FALSE]
+    sozCID <- which(!(seq_len(nrow(frag)) %in% sozIndex))
+    hmapSOZ <- frag[sozIndex, , drop = FALSE]
     hmapREF <- frag[sozCID, , drop = FALSE]
     meanSOZ <- colMeans(hmapSOZ)
     meanRef <- colMeans(hmapREF)

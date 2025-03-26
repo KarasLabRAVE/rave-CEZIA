@@ -10,14 +10,14 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description
 #'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t),
+#' @param epoch Numeric. A matrix of iEEG time series x(t),
 #' with electrodes names as rows and time points as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression.
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param nSearch Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
+#' @param nSearch Integer. Number of unstable eigenvalues with radius 1 to search for the minimum norm perturbation.
 #' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
 #' @param parallel Logical. If TRUE, use parallel computing.
 #' Users must register a parallel backend with the foreach package

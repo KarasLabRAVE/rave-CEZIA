@@ -69,10 +69,10 @@ fragStat <- function(frag, sozID) {
   )
   FragStat(
     qmatrix   = qmatrix,
-    cmeansoz  = muSOZ,
-    cmeansozc = muSOZC,
-    csdsoz    = sdSOZ,
-    csdsozc   = sdSOZC
+    meanSOZ = muSOZ,
+    meanRef = muSOZC,
+    sdSOZ    = sdSOZ,
+    sdRef   = sdSOZC
   )
 }
 
