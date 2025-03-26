@@ -49,7 +49,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' @examples
 #' data("pt01Frag")
 #' data("pt01EcoG")
-#' sozIndex <- attr(pt01EcoG, "sozindex")
+#' sozIndex <- attr(pt01EcoG, "sozIndex")
 #' pt01fragstat <- fragStat(pt01Frag, sozIndex)
 #' @export 
 fragStat <- function(frag, sozIndex) {

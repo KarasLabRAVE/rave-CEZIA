@@ -25,7 +25,10 @@ The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.796
 
 ## Key definition
 
-TODO: Cecile -- tells the complicated definition of fragility matrix
+Drug-resistant epilepsy (DRE) is a significant clinical challenge. Effective treatment requires the synthesis of large amounts of personalized clinical data with the goal of identifying the region within a patient’s brain from which seizures originate (the epileptogenic zone, or EZ). Current standard of care involves multidisciplinary group meetings and clinician consensus after reviewing patient data. This lack of a standardized methodology has led to variable surgical outcomes, measured by seizure freedom/reduction after surgery. Computational methods to identify the EZ have been developed to improve outcomes. 
+The neural fragility implemented is the R package is a promising biomarker of the epileptogenic zone. We provide this R package so that the method can be tested on extensive data for research.
+
+The hypothesis of the neural fragility is that small changes in connection strengths at seizure onset zone nodes (SOZ) cause an imbalance in inhibitory and excitatory connectivity between brain regions. Then if the SOZ is perturbed, over excitation can occur manifesting in a seizure. The neural fragility marker propose a metric to evaluate when connection strength changes cause imbalance and on which electrodes.To create the fragility marker, a personalized dynamic model of the brain network from observed iEEG signals is computed in a discrete number of time windows. Then the neural fragility measures the degree network nodes are imbalanced by systematically computing the minimum perturbation required for each electrode’s connections to produce instability for the entire network. 
 
 
 ## Load small ictal ieeg data for patient PT01
@@ -96,7 +99,8 @@ soz <- estimateSOZ(pt01Frag[,pt01Frag$startTimes<0])
 
 ## Fragility Statistics (need description!)
 ```{r}
-stats <- fragStat(pt01Frag, soz)
+sozIndex <- attr(pt01EcoG, "sozIndex")
+stats <- fragStat(pt01Frag, sozIndex)
 ```
 
 ## Plot functions for Fragility Matrix
@@ -108,14 +112,14 @@ The function `plotFragHeatmap` can reproduce Patient 01 results Figure 4 a from 
 The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
 ```
 
 `plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragDistribution(pt01Frag, sozIndex)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragQuantile(pt01Frag, sozIndex = sozNames)
 ```

@@ -14,7 +14,7 @@
 #' with electrodes names as rows and time points as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
-#' @param lambda Numeric. The lambda value to use in the ridge regression.
+#' @param lambda Numeric. The regularization parameter to use in the ridge regression.
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of unstable eigenvalues with radius 1 to search for the minimum norm perturbation.
@@ -217,7 +217,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     results
 }
 
-#' Find Serzure Onset Zone
+#' Find Seizure Onset Zone
 #' 
 #' The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
 #'

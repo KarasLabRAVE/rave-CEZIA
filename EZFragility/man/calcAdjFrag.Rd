@@ -30,7 +30,7 @@ with electrodes names as rows and time points as columns, or an Epoch object}
 
 \item{step}{Integer. The number of time points to move the window each time}
 
-\item{lambda}{Numeric. The lambda value to use in the ridge regression.
+\item{lambda}{Numeric. The regularization parameter to use in the ridge regression.
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
