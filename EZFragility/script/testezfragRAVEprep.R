@@ -37,14 +37,23 @@ fragtest<-calcAdjFrag(
   step = step, parallel = TRUE, progress = TRUE
 )
 
+
 ## stop the parallel backend
 parallel::stopCluster(cl)
+
+
+R2pt01<-fragtest$R2
+lambdapt01<-fragtest$lambdas
+fragpt01<-fragtest$frag
+fragrankpt01<-fragtest$frag
+
 
 ## Result visualization
 
 sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
 
+#plotheatmap<-plotFragHeatmapranked(fragtest, sozIndex)
 plotheatmap<-plotFragHeatmap(fragtest, sozIndex)
 plotheatmap<-plotheatmap+ggplot2::ggtitle("Fragility heatmap for patient PT01") 
 # Add a vertical line at Seizure Onset
@@ -74,3 +83,5 @@ plotiEEG
 
 sozIndex <- attr(pt01EcoG, "sozIndex")
 pt01fragstat <- fragStat(fragtest, sozIndex)
+
+quantilept01<-pt01fragstat$qmatrix

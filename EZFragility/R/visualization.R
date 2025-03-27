@@ -167,6 +167,49 @@ plotFragHeatmap <- function(
         )
 }
 
+plotFragHeatmapranked <- function(
+    frag,
+    sozIndex = NULL) {
+  ## TODO: make sozID an optional
+  ## TODO: add plot support to frag
+  fragMat <- frag$frag_ranked
+  elecNum <- nrow(fragMat)
+  windowNum <- ncol(fragMat)
+  
+  elecNames <- frag$electrodes
+  sozIndex <- checkIndex(sozIndex, elecNames)
+  
+  group1 <- sozIndex
+  group2 <- setdiff(seq_len(elecNum), sozIndex)
+  
+  elecColor <- rep("blue", elecNum)
+  elecColor[seq_along(group2)] <- "black"
+  
+  startTime <- frag$startTimes
+  if (is.null(startTime)) {
+    xlabel <- "Time Index"
+    stimes <- seq_len(windowNum)
+  } else {
+    xlabel <- "Time (s)"
+    stimes <- startTime
+  }
+  
+  rownames(fragMat) <- frag$electrodes
+  colnames(fragMat) <- stimes
+  
+  ## prepare the data.frame for visualization
+  allIndex <- c(group1, group2)
+  df <- as.data.frame(fragMat[allIndex, ])
+  
+  
+  
+  makeHeatMap(df) +
+    ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
+    ggplot2::theme(
+      axis.text.y = ggtext::element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
+    )
+}
+
 
 #' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
 #' 
