@@ -3,6 +3,7 @@ library(R.matlab)
 library(readxl)
 library(parallel)
 library(doSNOW)
+library(scales)
 data <- readMat('data-raw/pt01epochdata.mat')
 pt01EpochRaw <- data$a
 
@@ -39,18 +40,37 @@ fragtest<-calcAdjFrag(
 ## stop the parallel backend
 parallel::stopCluster(cl)
 
+## Result visualization
+
 sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
 
-plotFragHeatmap(fragtest, sozIndex)
+plotheatmap<-plotFragHeatmap(fragtest, sozIndex)
+plotheatmap<-plotheatmap+ggplot2::ggtitle("Fragility heatmap for patient PT01") 
+# Add a vertical line at Seizure Onset
+#plotheatmap <- plotheatmap + ggplot2::geom_vline(xintercept = as.numeric(0), color = "black", linetype = "dashed", size = 1)
+plotheatmap
+ggplot2::ggsave("~/pt01FragHeatmap.png")
 
-plotFragDistribution(fragtest, sozIndex)
+plotDistribution<-plotFragDistribution(fragtest, sozIndex)
+plotDistribution<-plotDistribution+ggplot2::ggtitle("Pooled fragility distribution for patient PT01") 
+plotDistribution
 
-plotFragQuantile(fragtest, sozIndex)
+plotquantile<-plotFragQuantile(fragtest, sozIndex)
+plotquantile<-plotquantile+ggplot2::ggtitle("Pooled fragility quantiles for patient PT01") 
+plotquantile
+
 
 ## Visualize a subject of electrodes
 sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozIndex, 77:80)
 
 epoch <- Epoch(pt01EcoG)
-visuIEEGData(epoch = epoch[display, ])
+plotiEEG<-visuIEEGData(epoch = epoch[display, ])
+plotiEEG<-plotiEEG+ggplot2::ggtitle("iEEG traces for patient PT01 around seizure Onset")
+plotiEEG
+
+## Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+
+sozIndex <- attr(pt01EcoG, "sozIndex")
+pt01fragstat <- fragStat(fragtest, sozIndex)
