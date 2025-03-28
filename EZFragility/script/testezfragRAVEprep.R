@@ -3,7 +3,7 @@ library(R.matlab)
 library(readxl)
 library(parallel)
 library(doSNOW)
-library(scales)
+#library(scales)
 data <- readMat('data-raw/pt01epochdata.mat')
 pt01EpochRaw <- data$a
 
@@ -20,20 +20,20 @@ times <- seq(-10, 10, length.out=ncol(pt01EpochRaw))
 times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
 colnames(pt01EpochRaw)<-times_with_sign
 
-pt01EcoG<-pt01EpochRaw
-attr(pt01EcoG, "sozIndex") <- sozIndex
-attr(pt01EcoG, "sozNames") <- sozNames
+pt01EcoGt<-pt01EpochRaw
+attr(pt01EcoGt, "sozIndex") <- sozIndex
+attr(pt01EcoGt, "sozNames") <- sozNames
 
 cl <- parallel::makeCluster(4, type = "SOCK")
 doSNOW::registerDoSNOW(cl)
 
 #data("pt01EcoG")
-epoch <- Epoch(pt01EcoG)
+epocht <- Epoch(pt01EcoGt)
 window <- 250
 step <- 125
 title <- "PT01 seizure 1"
 fragtest<-calcAdjFrag(
-  epoch = epoch, window = window,
+  epoch = epocht, window = window,
   step = step, parallel = TRUE, progress = TRUE
 )
 
@@ -42,15 +42,15 @@ fragtest<-calcAdjFrag(
 parallel::stopCluster(cl)
 
 
-R2pt01<-fragtest$R2
-lambdapt01<-fragtest$lambdas
-fragpt01<-fragtest$frag
-fragrankpt01<-fragtest$frag
+#R2pt01<-fragtest$R2
+#lambdapt01<-fragtest$lambdas
+#fragpt01<-fragtest$frag
+#fragrankpt01<-fragtest$frag
 
 
 ## Result visualization
 
-sozIndex <- attr(pt01EcoG, "sozIndex")
+sozIndex <- attr(pt01EcoGt, "sozIndex")
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
 
 #plotheatmap<-plotFragHeatmapranked(fragtest, sozIndex)
